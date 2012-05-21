@@ -1,0 +1,677 @@
+<?php
+/**
+ * @file
+ *   commerce_discount.module
+ */
+
+/**
+ * Implements hook_entity_info().
+ */
+function commerce_discount_entity_info() {
+  $items['commerce_discount'] = array(
+    'label' => t('Commerce discount'),
+    'controller class' => 'EntityAPIControllerExportable',
+    'entity class' => 'CommerceDiscount',
+    'base table' => 'commerce_discount',
+    'fieldable' => TRUE,
+    'entity keys' => array(
+      'id' => 'id',
+      'label' => 'description',
+      'name' => 'name',
+      'bundle' => 'type',
+    ),
+    'bundle keys' => array(
+      'bundle' => 'type',
+    ),
+    'bundles' => array(),
+    'exportable' => TRUE,
+    'export' => array(
+      'default hook' => 'commerce_discount_type_info',
+    ),
+    'module' => 'commerce_discount',
+    'access callback' => 'commerce_discount_access',
+  );
+
+  $items['commerce_discount_rule'] = array(
+    'label' => t('Commerce discount rule'),
+    'controller class' => 'EntityAPIControllerExportable',
+    'entity class' => 'CommerceDiscountRule',
+    'base table' => 'commerce_discount_rule',
+    'fieldable' => TRUE,
+    'entity keys' => array(
+      'id' => 'id',
+      'label' => 'description',
+      'name' => 'name',
+      'bundle' => 'type',
+    ),
+    'bundles' => array(),
+     'bundle keys' => array(
+       'bundle' => '',
+     ),
+    'exportable' => TRUE,
+    'export' => array(
+      'default hook' => 'commerce_discount_rule_type_info',
+    ),
+    'module' => 'commerce_discount',
+    'access callback' => 'commerce_discount_rule_access',
+  );
+
+  foreach (commerce_discount_type_get_name() as $type => $name) {
+    $items['commerce_discount']['bundles'][$type] = array(
+      'label' => $name,
+      'admin' => array(
+        'path' => 'admin/structure/commerce-discounts/types/' . strtr($type, '_', '-'),
+        'access arguments' => array('administer discount types'),
+      ),
+    );
+  }
+
+  return $items;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function commerce_discount_menu() {
+  $items = array();
+
+  // Add a discount type.
+  $items['admin/structure/commerce-discounts/add'] = array(
+    'title' => 'Add a commerce discount',
+    'description' => 'Add a commerce discount.',
+    'page callback' => 'commerce_discount_add_page',
+    'access callback' => 'commerce_discount_discount_add_any_access',
+    'file' => 'commerce_discount.admin.inc',
+  );
+
+  foreach (commerce_discount_types() as $type => $discount_type) {
+    $items['admin/structure/commerce-discounts/add/' . strtr($type, array('_' => '-'))] = array(
+      'title' => 'Create !name',
+      'title arguments' => array('!name' => $discount_type['name']),
+      'page callback' => 'commerce_discount_discount_form_wrapper',
+      'page arguments' => array(commerce_discount_new($type)),
+      'access callback' => 'commerce_discount_access',
+      'access arguments' => array('create', commerce_discount_new($type), NULL, 'commerce_discount'),
+      'file' => 'commerce_discount.admin.inc',
+    );
+  }
+
+  $items['admin/structure/commerce-discounts/types'] = array(
+    'title' => 'Commerce discounts types',
+    'description' => 'Manage commerce discounts.',
+    'page callback' => 'commerce_discount_types_overview',
+    'access arguments' => array('administer commerce discount types'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 0,
+    'file' => 'commerce_discount.admin.inc',
+  );
+  $items['admin/structure/commerce-discounts/types/add'] = array(
+    'title' => 'Add commerce discount type',
+    'page callback' => 'commerce_discount_discount_type_form_wrapper',
+    'page arguments' => array(
+      array(
+        'type' => '',
+        'name' => '',
+        'description' => '',
+        'help' => '',
+        'revision' => 1,
+      )
+    ),
+    'access arguments' => array('administer commerce discount types'),
+    'type' => MENU_LOCAL_ACTION,
+    'file' => 'commerce_discount.admin.inc',
+  );
+  foreach (commerce_discount_types() as $type => $discount_type) {
+    // Convert underscores to hyphens for the menu item argument.
+    $type_arg = strtr($type, '_', '-');
+
+    $items['admin/structure/commerce-discounts/types/' . $type_arg] = array(
+      'title' => $discount_type['name'],
+      'page callback' => 'commerce_discount_discount_type_form_wrapper',
+      'page arguments' => array($type),
+      'access arguments' => array('administer discount types'),
+      'file' => 'commerce_discount.admin.inc',
+    );
+
+    if ($discount_type['module'] == 'commerce_discount') {
+      $items['admin/structure/commerce-discounts/types/' . $type_arg . '/edit'] = array(
+        'title' => 'Edit',
+        'access callback' => 'commerce_discount_discount_type_update_access',
+        'access arguments' => array($type),
+        'type' => MENU_DEFAULT_LOCAL_TASK,
+        'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+      );
+      $items['admin/structure/commerce-discounts/types/' . $type_arg . '/delete'] = array(
+        'title' => 'Delete',
+        'page callback' => 'commerce_discount_discount_type_delete_form_wrapper',
+        'page arguments' => array($type),
+        'access callback' => 'commerce_discount_discount_type_update_access',
+        'access arguments' => array($type),
+        'type' => MENU_LOCAL_TASK,
+        'context' => MENU_CONTEXT_INLINE,
+        'weight' => 10,
+        'file' => 'commerce_discount.admin.inc',
+      );
+    }
+  }
+
+  return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function commerce_discount_theme() {
+  return array(
+    'discount_add_list' => array(
+      'variables' => array('content' => array()),
+      'file' => 'commerce_discount.admin.inc',
+    ),
+    'discount_type_admin_overview' => array(
+      'variables' => array('type' => NULL),
+      'file' => 'commerce_discount.admin.inc',
+    ),
+  );
+}
+
+/**
+ * Provide a separate Exception so it can be caught separately.
+ */
+class CommerceDiscountException extends Exception {}
+
+/**
+ * A class used for commerce discounts.
+ */
+class CommerceDiscount extends Entity {
+
+  /**
+   * The machine name of the commerce discounts.
+   *
+   * @var string
+   */
+  public $name;
+
+  /**
+   * The human-redable name of the commerce discounts.
+   *
+   * @var string
+   */
+  public $description = '';
+
+  public function __construct($values = array()) {
+    parent::__construct($values, 'commerce_discount');
+  }
+}
+
+/**
+ * Creates a commerce discount.
+ *
+ * @param $type
+ *   The commerce discount type name.
+ * @param $values
+ *   Array with the following keys:
+ *   - "timestamp" - The unix timestamp of the creation time of the discount. If
+ *     empty the current time will be used.
+ *
+ * @return
+ *   The commerce discount entity created.
+ */
+function commerce_discount_create($type, $values = array()) {
+  $values['type'] = $type;
+
+  return entity_create('commerce_discount', $values);
+}
+
+/**
+ * Commerce discount load.
+ *
+ * @param $id
+ *   The commerce discount ID.
+ *
+ * @return
+ *   A commerce discount object.
+ */
+function commerce_discount_load($id) {
+  $result = entity_load('commerce_discount', array($id));
+  return $result ? reset($result) : FALSE;
+}
+
+/**
+ * Loads multiple commerce discounts.
+ *
+ * @param $ids
+ *   An array of commerce discounts IDs, or FALSE to load all entities.
+ *
+ * @return
+ *   An array of commerce discounts objects indexed by their ids. When no
+ *   results are found, an empty array is returned.
+ */
+function commerce_discount_load_multiple($ids) {
+  return entity_load('commerce_discount', $ids);
+}
+
+/**
+ * Commerce discount save.
+ *
+ * @param $commerce_discount
+ *   A commerce discount instance object.
+ *
+ * @return
+ *   The saved commerce discount instance object.
+ */
+function commerce_discount_save($commerce_discount) {
+  return entity_save('commerce_discount', $commerce_discount);
+}
+
+/**
+ * Commerce discount delete.
+ *
+ * @param $ids
+ *   Commerce discount instances IDs array.
+ */
+function commerce_discount_delete($ids = array()) {
+  entity_delete_multiple('commerce_discount', $ids);
+}
+
+/**
+ * Delete multiple commerce discounts.
+ *
+ * @param $ids
+ *   Commerce discounts instances IDs array.
+ */
+function commerce_discount_delete_multiple($mids = array()) {
+  entity_delete_multiple('commerce_discount', $mids);
+}
+
+
+/**
+ * A class used for commerce discounts.
+ */
+class CommerceDiscountRule extends Entity {
+
+  /**
+   * The machine name of the commerce discounts.
+   *
+   * @var string
+   */
+  public $name;
+
+  /**
+   * The human-redable name of the commerce discounts.
+   *
+   * @var string
+   */
+  public $description = '';
+
+  public function __construct($values = array()) {
+    parent::__construct($values, 'commerce_discount_rule');
+  }
+
+  public function save() {
+    parent::save();
+    // Clear the entity property info cache, as changed argument-keys result
+    // in different entity property info.
+    entity_property_info_cache_clear();
+  }
+
+}
+
+/**
+ * Creates a commerce discount rule.
+ *
+ * @param $type
+ *   The commerce discount rule type name.
+ * @param $values
+ *   Array with the following keys:
+ *   - "timestamp" - The unix timestamp of the creation time of the discount. If
+ *     empty the current time will be used.
+ *
+ * @return
+ *   The commerce discount rule entity created.
+ */
+function commerce_discount_rule_create($type, $values = array()) {
+  $values['type'] = $type;
+
+  return entity_create('commerce_discount_rule', $values);
+}
+
+/**
+ * Commerce discount rule load.
+ *
+ * @param $id
+ *   The commerce discount rule ID.
+ *
+ * @return
+ *   A commerce discount rule object.
+ */
+function commerce_discount_rule_load($id) {
+  $result = entity_load('commerce_discount_rule', array($id));
+  return $result ? reset($result) : FALSE;
+}
+
+/**
+ * Loads multiple commerce discounts rules.
+ *
+ * @param $ids
+ *   An array of commerce discounts rules IDs, or FALSE to load all entities.
+ *
+ * @return
+ *   An array of commerce discounts rules objects indexed by their ids. When no
+ *   results are found, an empty array is returned.
+ */
+function commerce_discount_rules_load_multiple($ids) {
+  return entity_load('commerce_discount_rule', $ids);
+}
+
+/**
+ * Commerce discount rule save.
+ *
+ * @param $commerce_discount
+ *   A commerce discount rule instance object.
+ *
+ * @return
+ *   The saved commerce discount rule instance object.
+ */
+function commerce_discount_rule_save($commerce_discount_rule) {
+  return entity_save('commerce_discount_rule', $commerce_discount_rule);
+}
+
+/**
+ * Commerce discount rule delete.
+ *
+ * @param $ids
+ *   Commerce discount rule instances IDs array.
+ */
+function commerce_discount_rule_delete($ids = array()) {
+  entity_delete_multiple('commerce_discount_rule', $ids);
+}
+
+/**
+ * Delete multiple commerce discount rules.
+ *
+ * @param $ids
+ *   Commerce discount rules instances IDs array.
+ */
+function commerce_discount_rules_delete_multiple($mids = array()) {
+  entity_delete_multiple('commerce_discount_rule', $mids);
+}
+
+/**
+ * Access callback for the message type entities.
+ */
+function commerce_discount_access($op, $entity, $account = NULL, $entity_type = NULL) {
+  return user_access('administer commerce discounts', $account);
+}
+
+/**
+ * Access callback for the message type entities.
+ */
+function commerce_discount_rule_access($op, $entity, $account, $entity_type) {
+  return user_access('administer commerce discount rules', $account);
+}
+
+/**
+ * Access callback: determines if the user can edit or delete a discount type.
+ *
+ * @param $type
+ *   The machine-name of the discount type to be edited or deleted.
+ */
+function commerce_discount_discount_type_update_access($type) {
+  $discount_type = commerce_discount_type_load($type);
+
+  if ($discount_type['module'] == 'commerce_discount') {
+    return user_access('administer discount types');
+  }
+
+  return FALSE;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function commerce_discount_permission() {
+  $permissions = array();
+  $permissions['administer commerce discounts'] = array(
+    'title' => t('Administer commerce discounts'),
+    'description' => t('Administer commerce discounts.'),
+  );
+  $permissions['administer commerce discount rules'] = array(
+    'title' => t('Administer commerce discount rules'),
+    'description' => t('Administer commerce discount rules.'),
+  );
+
+  return $permissions;
+}
+
+
+/**
+ * Returns an array of discount type arrays keyed by type.
+ */
+function commerce_discount_types() {
+  // First check the static cache for a discount types array.
+  $discount_types = &drupal_static(__FUNCTION__);
+
+  // If it did not exist, fetch the types now.
+  if (!isset($discount_types)) {
+    $discount_types = array();
+
+    // Find discount types defined by hook_commerce_discount_type_info().
+    foreach (module_implements('commerce_discount_type_info') as $module) {
+      foreach (module_invoke($module, 'commerce_discount_type_info') as $type => $discount_type) {
+        // Set the module each discount type is defined by and revision handling
+        // if they aren't set yet.
+        $discount_type += array(
+          'module' => $module,
+          'revision' => 1,
+        );
+        $discount_types[$type] = $discount_type;
+      }
+    }
+
+    // Last allow the info to be altered by other modules.
+    drupal_alter('commerce_discount_type_info', $discount_types);
+  }
+
+  return $discount_types;
+}
+
+/**
+ * Returns the human readable name of any or all discount types.
+ *
+ * @param $type
+ *   Optional parameter specifying the type whose name to return.
+ *
+ * @return
+ *   Either an array of all discount type names keyed by the machine name or a
+ *     string containing the human readable name for the specified type. If a
+ *     type is specified that does not exist, this function returns FALSE.
+ */
+function commerce_discount_type_get_name($type = NULL) {
+  $discount_types = commerce_discount_types();
+
+  // Return a type name if specified and it exists.
+  if (!empty($type)) {
+    if (isset($discount_types[$type])) {
+      return $discount_types[$type]['name'];
+    }
+    else {
+      // Return FALSE if it does not exist.
+      return FALSE;
+    }
+  }
+
+  // Otherwise turn the array values into the type name only.
+  foreach ($discount_types as $key => $value) {
+    $discount_types[$key] = $value['name'];
+  }
+
+  return $discount_types;
+}
+
+/**
+ * Access callback: determines if the user can create any type of discount.
+ */
+function commerce_discount_discount_add_any_access() {
+  // Grant automatic access to users with administer discounts permission.
+  if (user_access('administer commerce_discount entities')) {
+    return TRUE;
+  }
+
+  // Check the user's access on a discount type basis.
+  foreach (commerce_discount_types() as $type => $discount_type) {
+    if (commerce_discount_access('create', commerce_discount_new($type))) {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Form callback wrapper: create or edit a discount type.
+ *
+ * @param $type
+ *   The machine-name of the discount type being created or edited by this form
+ *     or a full discount type array.
+ *
+ * @see commerce_discount_discount_type_form()
+ */
+function commerce_discount_discount_type_form_wrapper($type) {
+  if (is_array($type)) {
+    $discount_type = $type;
+  }
+  else {
+    $discount_type = commerce_discount_type_load($type);
+  }
+
+  // Add the breadcrumb for the form's location.
+  // commerce_discount_ui_set_breadcrumb(TRUE);
+
+  // Return a message if the discount type is not governed by Discount UI.
+  if (!empty($discount_type['type']) && $discount_type['module'] != 'commerce_discount') {
+    return t('This discount type cannot be edited, because it is not defined by the commerce discount module.');
+  }
+
+  return drupal_get_form('commerce_discount_discount_type_form', $discount_type);
+}
+
+/**
+ * Loads a discount type.
+ *
+ * @param $type
+ *   The machine-readable name of the discount type; accepts normal machine names
+ *     and URL prepared machine names with underscores replaced by hyphens.
+ */
+function commerce_discount_type_load($type) {
+  $type = strtr($type, array('-' => '_'));
+  $discount_types = commerce_discount_types();
+  return !empty($discount_types[$type]) ? $discount_types[$type] : FALSE;
+}
+
+/**
+ * Checks to see if a given discount type already exists.
+ *
+ * @param $type
+ *   The string to match against existing types.
+ *
+ * @return
+ *   TRUE or FALSE indicating whether or not the discount type exists.
+ */
+function commerce_discount_validate_discount_type_unique($type) {
+  // Look for a match of the type.
+  if ($match_id = db_query('SELECT type FROM {commerce_discount_type} WHERE type = :type', array(':type' => $type))->fetchField()) {
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * Saves a discount type.
+ *
+ * This function will either insert a new discount type if
+ * $discount_type['is_new'] is set or attempt to update an existing discount
+ * type if it is not. It does not currently support changing the
+ * machine-readable name of the discount type, nor is this possible through the
+ * form supplied by the commerce dicount module.
+ *
+ * @param $discount_type
+ *   The discount type array containing the basic properties as initialized in
+ *     commerce_discount_discount_type_new().
+ * @param $skip_reset
+ *   Boolean indicating whether or not this save should result in discount types
+ *     being reset and the menu being rebuilt; defaults to FALSE. This is useful
+ *     when you intend to perform many saves at once, as menu rebuilding is very
+ *     costly in terms of performance.
+ *
+ * @return
+ *   The return value of the call to drupal_write_record() to save the discount
+ *     type, either FALSE on failure or SAVED_NEW or SAVED_UPDATED indicating
+ *     the type of query performed to save the discount type.
+ */
+function commerce_discount_discount_type_save($discount_type, $skip_reset = FALSE) {
+  $op = drupal_write_record('commerce_discount_type', $discount_type, empty($discount_type['is_new']) ? 'type' : array());
+
+  // If this is a new discount type and the insert did not fail...
+  if (!empty($discount_type['is_new']) && $op !== FALSE) {
+    // Notify the field API that a new bundle has been created.
+    field_attach_create_bundle('commerce_discount', $discount_type['type']);
+
+    // Notify other modules that a new discount type has been created.
+    module_invoke_all('commerce_discount_type_insert', $discount_type, $skip_reset);
+  }
+  elseif ($op !== FALSE) {
+    // Notify other modules that an existing discount type has been updated.
+    module_invoke_all('commerce_discount_type_update', $discount_type, $skip_reset);
+  }
+
+  // Rebuild the menu to add this discount type's menu items.
+  if (!$skip_reset) {
+    commerce_discount_types_reset();
+    menu_rebuild();
+  }
+
+  return $op;
+}
+
+/**
+ * Resets the cached list of discount types.
+ */
+function commerce_discount_types_reset() {
+  $discount_types = &drupal_static('commerce_discount_types');
+  $discount_types = NULL;
+  entity_info_cache_clear();
+}
+
+/**
+ * Implements hook_commerce_discount_type_info().
+ */
+function commerce_discount_commerce_discount_type_info() {
+  return db_query('SELECT * FROM {commerce_discount_type}')->fetchAllAssoc('type', PDO::FETCH_ASSOC);
+}
+
+/**
+ * Returns an initialized discount object.
+ *
+ * @param $type
+ *   The machine-readable type of the discount.
+ *
+ * @return
+ *   A discount object with all default fields initialized.
+ */
+function commerce_discount_new($type = '') {
+  return entity_get_controller('commerce_discount')->create(array('type' => $type));
+}
+
+
+/**
+ * Implements hook_commerce_discount_rule_type_info()
+ */
+function commerce_discount_discount_rule_type_info() {
+  $items['discount_order'] = array(
+    'name' => 'Discount order',
+    'type' => 'discount_order',
+  );
+
+  return $items;
+}
