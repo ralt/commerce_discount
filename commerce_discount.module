@@ -27,7 +27,7 @@ function commerce_discount_entity_info() {
     'module' => 'commerce_discount',
     'uri callback' => 'entity_class_uri',
     'access callback' => 'commerce_discount_access',
-    'metadata controller class' => 'EntityDefaultMetadataController',
+    'metadata controller class' => 'CommerceDiscountMetadataController',
     'views controller class' => 'CommerceDiscountViewsController',
     // Enable the entity API's admin UI.
     'admin ui' => array(

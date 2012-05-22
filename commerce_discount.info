@@ -9,6 +9,7 @@ dependencies[] = entityreference
 dependencies[] = inline_entity_form
 dependencies[] = views
 
+files[] = commerce_discount.info.inc
 files[] = includes/commerce_discount.admin.inc
 files[] = includes/commerce_discount.class.inc
 files[] = includes/commerce_discount_offer.class.inc
