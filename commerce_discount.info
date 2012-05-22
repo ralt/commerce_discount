@@ -1,9 +1,14 @@
-name = Commerce discount
-description = "Commerce discount."
+name = Commerce Discount
+description = Provides common functionality and a UI for managing discounts.
 core = 7.x
 package = Commerce
-dependencies[] = entity
 
-; Entity API includes
-files[] = commerce_discount.info.inc
-files[] = commerce_discount.admin.inc
+dependencies[] = commerce_price
+dependencies[] = entity
+dependencies[] = entityreference
+dependencies[] = inline_entity_form
+
+files[] = includes/commerce_discount.admin.inc
+files[] = includes/commerce_discount.class.inc
+files[] = includes/commerce_discount_offer.class.inc
+
