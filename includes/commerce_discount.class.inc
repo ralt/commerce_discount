@@ -36,4 +36,10 @@ class CommerceDiscount extends Entity {
   public function __construct($values = array()) {
     parent::__construct($values, 'commerce_discount');
   }
+
+  protected function defaultUri() {
+    $entity_info = entity_get_info('commerce_discount');
+    $path = $entity_info['admin ui']['path'] . '/manage';
+    return array('path' => $path . '/' . $this->name);
+  }
 }

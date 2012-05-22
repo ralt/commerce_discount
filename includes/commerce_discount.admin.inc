@@ -35,6 +35,41 @@ class CommerceDiscountUIController extends EntityDefaultUIController {
     field_attach_submit('commerce_discount', $entity, $form['commerce_discount_fields'], $form_state);
     return $entity;
   }
+
+  /**
+   * Overriden EntityDefaultUIController::hook_menu().
+   *
+   * Call our own page callback to show the "commerce_discount_overview"
+   * view, as this view has exposed filters which will not work inside
+   * Entity API's default form.
+   */
+  public function hook_menu() {
+    $plural_label = isset($this->entityInfo['plural label']) ? $this->entityInfo['plural label'] : $this->entityInfo['label'] . 's';
+
+    $items = parent::hook_menu();
+    $items[$this->path] = array(
+      'title' => $plural_label,
+      'page callback' => 'commerce_discount_overview_form',
+      'description' => 'Manage ' . $plural_label . '.',
+      'access callback' => 'entity_access',
+      'access arguments' => array('view', $this->entityType),
+      'file' => 'includes/commerce_discount.admin.inc',
+      'file path' => drupal_get_path('module', 'commerce_discount'),
+    );
+    return $items;
+  }
+
+}
+
+/**
+ * Builds the entity overview form.
+ */
+function commerce_discount_overview_form() {
+  $view = views_get_view('commerce_discount_overview');
+  $view->override_url = $_GET['q'];
+  $form['view'] = array('#markup' => $view->preview());
+  $form['#attached']['css'][] = drupal_get_path('module', 'commerce_discount') . '/css/commerce_discount.css';
+  return $form;
 }
 
 /**
