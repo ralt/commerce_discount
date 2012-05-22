@@ -51,6 +51,7 @@ function commerce_discount_entity_info() {
     'exportable' => TRUE,
     'entity keys' => array(
       'id' => 'discount_offer_id',
+      'name' => 'name',
       'bundle' => 'type',
     ),
     'bundles' => array(),
@@ -120,6 +121,30 @@ function commerce_discount_views_api($module, $api) {
   }
 }
 
+/**
+ * Implements hook_features_pipe_commerce_discount_alter().
+ *
+ * Pipe the related Commerce discount order entity.
+ */
+function commerce_discount_features_pipe_commerce_discount_alter(&$pipe, $data, $export) {
+  if (empty($data)) {
+    return;
+  }
+
+  foreach ($data as $name) {
+    $wrapper = entity_metadata_wrapper('commerce_discount', $name);
+    $pipe['commerce_discount_offer'][] = $wrapper->commerce_discount_offer->name->value();
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Hide the "Commerce discount offer" for the components list of features.
+ */
+function commerce_discount_form_features_export_form_alter(&$form, $from_state) {
+  unset($form['export']['components']['#options']['commerce_discount_offer']);
+}
 
 /**
  * Access callback for commerce_discount entities.
