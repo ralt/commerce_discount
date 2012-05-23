@@ -6,13 +6,6 @@
 class CommerceDiscountOffer extends Entity {
 
   /**
-   * The machine name of the discount offer.
-   *
-   * @var string
-   */
-  public $name;
-
-  /**
    * The discount offer type (bundle).
    *
    * @var string

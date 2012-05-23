@@ -48,6 +48,11 @@ class commerce_discount_handler_field_operations_dropbutton extends views_handle
       'title' => t('clone'),
     );
 
+    $links[] = array(
+      'href'  => $path . '/' . $commerce_discount->name . '/export',
+      'title' => t('export'),
+    );
+
     return theme('links__ctools_dropbutton', array('links' => $links));
   }
 }

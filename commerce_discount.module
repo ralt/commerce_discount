@@ -12,7 +12,7 @@
 function commerce_discount_entity_info() {
   $items['commerce_discount'] = array(
     'label' => t('Commerce Discount'),
-    'controller class' => 'EntityAPIControllerExportable',
+    'controller class' => 'CommerceDiscountControllerExportable',
     'entity class' => 'CommerceDiscount',
     'base table' => 'commerce_discount',
     'fieldable' => TRUE,
@@ -48,10 +48,8 @@ function commerce_discount_entity_info() {
     'entity class' => 'CommerceDiscountOffer',
     'base table' => 'commerce_discount_offer',
     'fieldable' => TRUE,
-    'exportable' => TRUE,
     'entity keys' => array(
       'id' => 'discount_offer_id',
-      'name' => 'name',
       'bundle' => 'type',
     ),
     'bundles' => array(),
