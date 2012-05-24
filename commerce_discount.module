@@ -66,6 +66,27 @@ function commerce_discount_entity_info() {
 }
 
 /**
+ * Implements hook_inline_entity_type_info().
+ */
+function commerce_discount_inline_entity_type_info() {
+  $types = array();
+  $types['commerce_discount_offer'] = array(
+    'file' => drupal_get_path('module', 'commerce_discount') . '/includes/commerce_discount_offer.type.inc',
+    'callbacks' => array(
+      'form' => 'commerce_discount_inline_offer_form',
+    ),
+    // The labels are not used currently.
+    'labels' => array(
+      'add fieldset' => t('Add new offer'),
+      'add button' => t('Add offer'),
+      'save button' => t('Save offer'),
+    ),
+  );
+
+  return $types;
+}
+
+/**
  * Implements hook_modules_enabled().
  *
  * Add commerce discount offer reference field.
@@ -297,7 +318,7 @@ function commerce_discount_offer_types() {
           // Remember the providing module.
           'module' => $module,
         );
-        $discount_types[$type] = $info;
+        $offer_types[$type] = $info;
       }
     }
 
