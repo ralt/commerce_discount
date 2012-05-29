@@ -1,0 +1,88 @@
+<?php
+
+/**
+ * @file
+ * Provides date fields for the Commerce discount entity.
+ */
+
+/**
+ * Implements hook_modules_enabled().
+ *
+ * Add commerce discount date field.
+ *
+ * @see commerce_discount_date_install()
+ */
+function commerce_discount_date_modules_enabled($modules) {
+  foreach ($modules as $module) {
+    if ($info = module_invoke($module, 'commerce_discount_type_info'))
+    foreach ($info as $type => $value) {
+      if (!field_info_instance('commerce_discount', 'commerce_discount_date', $type)) {
+        $instance = array(
+          'field_name' => 'commerce_discount_date',
+          'entity_type' => 'commerce_discount',
+          'bundle' => $type,
+          'label' => t('Discount date'),
+          'widget' => array(
+            'module' => 'date',
+            'type' => 'date_select',
+          ),
+        );
+        field_create_instance($instance);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function commerce_discount_date_views_api($module, $api) {
+  if ($module == 'views') {
+    return array(
+      'version' => 2,
+      'path' => drupal_get_path('module', 'commerce_discount_date') . '/includes/views',
+    );
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function commerce_discount_date_form_commerce_discount_form_alter(&$form, $form_state) {
+  // $form['commerce_discount_fields']['commerce_discount_date']['#attributes']['class'][] = 'clearfix';
+  $form['commerce_discount_fields']['commerce_discount_date']['#after_build'][] = 'commerce_discount_date_after_build';
+}
+
+/**
+ * After-build callback for altering the date field.
+ *
+ * @param $element
+ *   The date field.
+ *
+ * @return
+ *   The altered date field.
+ */
+function commerce_discount_date_after_build($element) {
+  // Reset the titles.
+  $element[LANGUAGE_NONE][0]['value']['#title'] = t('Start date');
+  $element[LANGUAGE_NONE][0]['value2']['#title'] = t('End date');
+  $element[LANGUAGE_NONE][0]['value']['date']['#title'] = '';
+  $element[LANGUAGE_NONE][0]['value']['time']['#title'] = '';
+  $element[LANGUAGE_NONE][0]['value2']['date']['#title'] = '';
+  $element[LANGUAGE_NONE][0]['value2']['time']['#title'] = '';
+
+  // Ignore the "Show end date" checkbox.
+  unset($element[LANGUAGE_NONE][0]['value2']['#states']);
+  // Remove the "show end date" checkbox.
+  unset($element[LANGUAGE_NONE][0]['show_todate']);
+
+  // When creating a new discount, show empty dates.
+  if (!empty($element[LANGUAGE_NONE][0]['#entity']->is_new)) {
+    $element[LANGUAGE_NONE][0]['value']['date']['#value'] = '';
+    $element[LANGUAGE_NONE][0]['value']['time']['#value'] = '';
+    $element[LANGUAGE_NONE][0]['value2']['date']['#value'] = '';
+    $element[LANGUAGE_NONE][0]['value2']['time']['#value'] = '';
+  }
+
+  return $element;
+}
