@@ -86,28 +86,6 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
     $commerce_discount->type = $form_state['values']['commerce_discount_type'];
   }
 
-  $form['label'] = array(
-    '#title' => t('Admin title'),
-    '#type' => 'textfield',
-    '#default_value' => $commerce_discount->label,
-    '#description' => t('The human-readable description of this message type.'),
-    '#required' => TRUE,
-    '#weight' => -5,
-  );
-
-  // Machine-readable type name.
-  $form['name'] = array(
-    '#type' => 'machine_name',
-    '#default_value' => isset($commerce_discount->name) ? $commerce_discount->name : '',
-    '#disabled' => $commerce_discount->hasStatus(ENTITY_IN_CODE),
-    '#machine_name' => array(
-      'exists' => 'commerce_discount_load',
-      'source' => array('label'),
-    ),
-    '#description' => t('A unique machine-readable name for this message type. It must only contain lowercase letters, numbers, and underscores.'),
-    '#weight' => -5,
-  );
-
   $options = array();
   foreach (commerce_discount_types() as $type => $info) {
     $options[$type] = $info['label'];
@@ -125,6 +103,26 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
        'callback' => 'commerce_discount_fields_ajax_callback',
        'wrapper' => 'commerce-discount-fields-wrapper',
     ),
+  );
+
+  $form['label'] = array(
+    '#title' => t('Admin title'),
+    '#type' => 'textfield',
+    '#default_value' => $commerce_discount->label,
+    '#description' => t('Shown only on managment screens, not shown to customers.'),
+    '#required' => TRUE,
+  );
+
+  // Machine-readable type name.
+  $form['name'] = array(
+    '#type' => 'machine_name',
+    '#default_value' => isset($commerce_discount->name) ? $commerce_discount->name : '',
+    '#disabled' => $commerce_discount->hasStatus(ENTITY_IN_CODE),
+    '#machine_name' => array(
+      'exists' => 'commerce_discount_load',
+      'source' => array('label'),
+    ),
+    '#description' => t('A unique machine-readable name for this message type. It must only contain lowercase letters, numbers, and underscores.'),
   );
 
   $form['commerce_discount_fields'] = array(
@@ -162,6 +160,10 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
       '#submit' => array('commerce_discount_form_submit_delete')
     );
   }
+
+  // Add assets.
+  $form['#attached']['js'][] = drupal_get_path('module', 'commerce_discount') . '/js/commerce_discount.js';
+  $form['#attached']['css'][] = drupal_get_path('module', 'commerce_discount') . '/css/commerce_discount.css';
 
   return $form;
 }

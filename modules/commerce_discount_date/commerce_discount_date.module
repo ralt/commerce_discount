@@ -21,10 +21,10 @@ function commerce_discount_date_modules_enabled($modules) {
           'field_name' => 'commerce_discount_date',
           'entity_type' => 'commerce_discount',
           'bundle' => $type,
-          'label' => t('Discount date'),
+          'label' => t('Promotion dates'),
           'widget' => array(
             'module' => 'date',
-            'type' => 'date_select',
+            'type' => 'date_popup',
           ),
         );
         field_create_instance($instance);
