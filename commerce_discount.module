@@ -115,7 +115,6 @@ function commerce_discount_modules_enabled($modules) {
   }
 }
 
-
 /**
  * Implements hook_permission().
  */
@@ -163,6 +162,23 @@ function commerce_discount_features_pipe_commerce_discount_alter(&$pipe, $data, 
  */
 function commerce_discount_form_features_export_form_alter(&$form, $from_state) {
   unset($form['export']['components']['#options']['commerce_discount_offer']);
+}
+
+/**
+ * Implements hook_entity_delete().
+ *
+ * Delete referenced commerce_discount_offer upon commerce_discount deletion.
+ */
+function commerce_discount_entity_delete($entity, $entity_type) {
+  if ($entity_type != 'commerce_discount') {
+    return;
+  }
+
+  $wrapper = entity_metadata_wrapper('commerce_discount', $entity);
+  // Delete the referenced commerce_discount_offer.
+  if ($wrapper->commerce_discount_offer->value()) {
+    entity_delete('commerce_discount_offer', $wrapper->commerce_discount_offer->getIdentifier());
+  }
 }
 
 /**
