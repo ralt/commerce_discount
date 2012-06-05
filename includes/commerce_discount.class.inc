@@ -73,17 +73,17 @@ class CommerceDiscountControllerExportable extends EntityAPIControllerExportable
   public function save($entity, DatabaseTransaction $transaction = NULL) {
     // If overwriting an existing discount, delete the referenced
     // discount_offer.
-    if (!empty($entity->discount_id)) {
+    $import_wrapper = entity_metadata_wrapper('commerce_discount', $entity);
+    if (!empty($entity->discount_id) && !$import_wrapper->commerce_discount_offer->value()) {
       $discount = entity_load_single('commerce_discount', $entity->discount_id);
       $wrapper = entity_metadata_wrapper('commerce_discount', $discount);
       entity_delete('commerce_discount_offer', $wrapper->commerce_discount_offer->getIdentifier());
     }
 
-    $wrapper = entity_metadata_wrapper('commerce_discount', $entity);
     // In case there's imported data of discount offer
     // $wrapper->commerce_discount_offer is empty. If there's discount_offer to
     // import or it was deleted above, recreate it and attach to the discount.
-    if (!$wrapper->commerce_discount_offer->value() || !empty($entity->discount_id)) {
+    if (!$import_wrapper->commerce_discount_offer->value()) {
       $discount_offer = entity_create('commerce_discount_offer', $entity->commerce_discount_offer);
       $discount_offer->save();
       $wrapper->commerce_discount_offer->set($discount_offer);

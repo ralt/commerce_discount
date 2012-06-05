@@ -44,8 +44,8 @@ function hook_commerce_discount_type_info() {
  *
  * The discount offer type array structure includes the following keys:
  * - label: a translatable, human-readable discount offer type label.
- * - callback: the function callback used to apply a discount offer of the
- *   defined type to an entity.
+ * - action: the Rules function callback used to apply a discount offer
+ *   of the defined type to an entity.
  *
  * @return
  *   An array of discount offer type arrays keyed by the machine name of the
@@ -53,14 +53,25 @@ function hook_commerce_discount_type_info() {
  */
 function hook_commerce_discount_offer_type_info() {
   $types = array();
-  $types['fixed_amount'] = array(
-    'label' => t('$ off'),
-    'callback' => 'commerce_discount_fixed_amount_offer_apply',
-  );
-  $types['percentage'] = array(
-    'label' => t('% off'),
-    'callback' => 'commerce_discount_percentage_offer_apply',
+  $types['random_amount'] = array(
+    'label' => t('Random $ off'),
+    'action' => 'foo_random_amount',
   );
 
   return $types;
+}
+
+/**
+ * Allow modules alter the rule object, with configuration specifc
+ * to commerce discount.
+ *
+ * @param $rule
+ *   The rule configuration entity, passed by reference.
+ * @param $commerce_discount
+ *   The commerce discount entity.
+ */
+function hook_commerce_discount_rule_build($rule, $commerce_discount) {
+  if ($commerce_discount->name == 'foo') {
+    $rule->action('drupal_message', array('message' => 'Discount FOO was applied.'));
+  }
 }
