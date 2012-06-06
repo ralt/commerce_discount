@@ -50,3 +50,37 @@ function commerce_discount_usage_views_api($module, $api) {
   }
 }
 
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function commerce_discount_usage_form_commerce_discount_form_alter(&$form, $form_state) {
+  $form['commerce_discount_fields']['commerce_discount_max_uses']['#attributes']['class'][] = 'clearfix';
+  $form['commerce_discount_fields']['commerce_discount_max_uses'][LANGUAGE_NONE][0]['value']['#title'] = t('Amount');
+
+  $form['commerce_discount_fields']['commerce_discount_max_uses']['limit_uses'] = array(
+    '#type' => 'select',
+    '#options' => array(
+      'unlimited' => t('Unlimited'),
+      'limited' => t('Limited'),
+    ),
+    '#title' => t('Quantity'),
+    '#weight' => -10,
+  );
+
+  $form['commerce_discount_fields']['commerce_discount_max_uses'][LANGUAGE_NONE][0]['value'] += array(
+    '#states' => array(
+        'disabled' => array(
+          ':input[name="commerce_discount_fields[commerce_discount_max_uses][limit_uses]"]' => array('value' => 'unlimited'),
+        ),
+      ),
+  );
+
+  // Copy the discount-used field into the max uses wrapper and hide the
+  // original.
+  $form['commerce_discount_fields']['commerce_discount_max_uses']['discount_used'] = $form['commerce_discount_fields']['commerce_discount_uses'][LANGUAGE_NONE][0]['value'];
+  $form['commerce_discount_fields']['commerce_discount_uses'][LANGUAGE_NONE][0]['value']['#access'] = FALSE;
+
+  $form['commerce_discount_fields']['commerce_discount_max_uses']['discount_used']['#disabled'] = TRUE;
+  $form['commerce_discount_fields']['commerce_discount_max_uses']['discount_used']['#title'] = t('Discount used');
+  $form['commerce_discount_fields']['commerce_discount_max_uses']['discount_used']['#weight'] = 10;
+}

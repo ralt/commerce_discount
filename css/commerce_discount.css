@@ -31,7 +31,7 @@
   background-color:#0089c9;
   color:white;
 }
-#commerce-discount-edit-order-discount-form label {
+#commerce-discount-edit-order-discount-form label, #commerce-discount-form label {
   display:inline;
   margin-right:15px;
 }
@@ -158,6 +158,15 @@ fieldset.form-wrapper .fieldset-legend {
   float:left;
 }
 .field-name-commerce-discount-date .fieldset-wrapper .container-inline-date.end-date-wrapper { margin-left:20px; }
+.field-name-commerce-discount-max-uses {
+  background:#f0f0f0;
+  padding:15px;
+}
+.field-name-commerce-discount-max-uses > div {
+  float:left;
+  margin-left:30px;
+}
+.field-name-commerce-discount-max-uses > div:first-child { margin-left:0; }
 .view-commerce-discount-overview .views-table { border:none; }
 .view-commerce-discount-overview .views-table tr, .view-commerce-discount-overview .views-table td { border:none; }
 .view-commerce-discount-overview .views-table th { text-transform:none; }
