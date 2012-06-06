@@ -83,13 +83,29 @@ function commerce_discount_views_default_views() {
   $handler->display->display_options['fields']['rendered_entity']['field'] = 'rendered_entity';
   $handler->display->display_options['fields']['rendered_entity']['label'] = 'Offer';
   $handler->display->display_options['fields']['rendered_entity']['link_to_entity'] = 1;
-  /* Field: Commerce Discount: Enabled */
-  $handler->display->display_options['fields']['enabled']['id'] = 'enabled';
-  $handler->display->display_options['fields']['enabled']['table'] = 'commerce_discount';
-  $handler->display->display_options['fields']['enabled']['field'] = 'enabled';
-  $handler->display->display_options['fields']['enabled']['label'] = 'Status';
-  $handler->display->display_options['fields']['enabled']['type'] = 'enabled-disabled';
-  $handler->display->display_options['fields']['enabled']['not'] = 0;
+  /* Field: Commerce Discount: Enable / Disable */
+  $handler->display->display_options['fields']['enable_disable']['id'] = 'enable_disable';
+  $handler->display->display_options['fields']['enable_disable']['table'] = 'commerce_discount';
+  $handler->display->display_options['fields']['enable_disable']['field'] = 'enable_disable';
+  $handler->display->display_options['fields']['enable_disable']['label'] = 'Status';
+  $handler->display->display_options['fields']['enable_disable']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['enable_disable']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['enable_disable']['alter']['absolute'] = 0;
+  $handler->display->display_options['fields']['enable_disable']['alter']['external'] = 0;
+  $handler->display->display_options['fields']['enable_disable']['alter']['replace_spaces'] = 0;
+  $handler->display->display_options['fields']['enable_disable']['alter']['trim_whitespace'] = 0;
+  $handler->display->display_options['fields']['enable_disable']['alter']['nl2br'] = 0;
+  $handler->display->display_options['fields']['enable_disable']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['enable_disable']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['enable_disable']['alter']['more_link'] = 0;
+  $handler->display->display_options['fields']['enable_disable']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['enable_disable']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['enable_disable']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['enable_disable']['element_label_colon'] = 1;
+  $handler->display->display_options['fields']['enable_disable']['element_default_classes'] = 1;
+  $handler->display->display_options['fields']['enable_disable']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['enable_disable']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['enable_disable']['hide_alter_empty'] = 1;
   /* Field: Commerce Discount: Operations */
   $handler->display->display_options['fields']['operations_dropbutton']['id'] = 'operations_dropbutton';
   $handler->display->display_options['fields']['operations_dropbutton']['table'] = 'commerce_discount';
@@ -125,6 +141,7 @@ function commerce_discount_views_default_views() {
   $handler->display->display_options['filters']['enabled']['expose']['label'] = 'Enabled';
   $handler->display->display_options['filters']['enabled']['expose']['operator'] = 'enabled_op';
   $handler->display->display_options['filters']['enabled']['expose']['identifier'] = 'enabled';
+
   $views['commerce_discount_overview'] = $view;
 
   return $views;

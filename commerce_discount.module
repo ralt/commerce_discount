@@ -134,7 +134,7 @@ function commerce_discount_views_api($module, $api) {
   if ($module == 'views') {
     return array(
       'version' => 2,
-      'path' => drupal_get_path( 'module','commerce_discount') . '/includes/views',
+      'path' => drupal_get_path('module','commerce_discount') . '/includes/views',
     );
   }
 }
@@ -179,6 +179,81 @@ function commerce_discount_entity_delete($entity, $entity_type) {
   if ($wrapper->commerce_discount_offer->value()) {
     entity_delete('commerce_discount_offer', $wrapper->commerce_discount_offer->getIdentifier());
   }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function commerce_discount_menu() {
+  $items['admin/commerce/commerce-discounts/manage/%/enable/%'] = array(
+    'page callback' => 'commerce_discount_set_enabled',
+    'page arguments' => array(4, TRUE, 6),
+    'access arguments' => array('administer commerce discounts'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['admin/commerce/commerce-discounts/manage/%/disable/%'] = array(
+    'page callback' => 'commerce_discount_set_enabled',
+    'page arguments' => array(4, FALSE, 6),
+    'access arguments' => array('administer commerce discounts'),
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Callback for enabling / disabling a commerce_discount.
+ */
+function commerce_discount_set_enabled($discount_id, $enabled, $type = 'ajax') {
+  if (!$discount_id) {
+    return;
+  }
+
+  $entity = entity_load_single('commerce_discount', $discount_id);
+  $entity->enabled = $enabled;
+  entity_save('commerce_discount', $entity);
+
+  if ($type == 'ajax') {
+    $html = commerce_discount_state_switch_content($enabled, $discount_id);
+    $commands = array();
+    $commands[] = ajax_command_html(".discount-$discount_id", $html);
+    $page = array('#type' => 'ajax', '#commands' => $commands);
+    ajax_deliver($page);
+  }
+  else {
+    drupal_goto('admin/commerce/commerce-discounts');
+  }
+}
+
+/**
+ * Callback for building the enable / disable widget.
+ *
+ * @param $enabled
+ *   Boolean specifying whether the discount is enabled.
+ * @param $discount_id
+ *   The discount ID.
+ *
+ * @return
+ *   The widget HTML.
+ */
+function commerce_discount_state_switch_content($enabled, $discount_id) {
+  $options = array(
+    'attributes' => array(
+      'class' => array('use-ajax'),
+    ),
+  );
+
+  if ($enabled) {
+    $enable = array('data' => t('Enabled'), 'class' => array('enabled'));
+    $disable = l(t('Disable'), "admin/commerce/commerce-discounts/manage/$discount_id/disable/nojs", $options);
+  }
+  else {
+    $enable = l(t('Enable'), "admin/commerce/commerce-discounts/manage/$discount_id/enable/nojs", $options);
+    $disable = array('data' => t('Disabled'), 'class' => array('disabled'));
+  }
+
+  return theme('item_list', array('items' => array($enable, $disable)));
 }
 
 /**

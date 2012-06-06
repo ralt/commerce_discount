@@ -1,6 +1,7 @@
 @gray: #f0f0f0;
 @gray2: #cccccc;
 @gray3: #e7e8e3;
+@gray4: #4d4e49;
 @grayLight: #f6f6f6;
 @grayDark: #6d6d6d;
 @blue: #0089c9;
@@ -168,7 +169,7 @@
       }
 
       label[for=edit-enabled-0] {
-        background-color: #4d4e49;
+        background-color: @gray4;
         color: white;
       }
 
@@ -244,6 +245,10 @@ fieldset.form-wrapper {
       text-transform: none;
     }
 
+    th.views-field-enable-disable {
+
+    }
+
     th.views-field-operations-dropbutton {
       width: 70px;
     }
@@ -259,6 +264,37 @@ fieldset.form-wrapper {
       &.first {
         color: @grayDark;
         font-style: italic;
+      }
+    }
+
+    td.views-field-enable-disable .item-list ul {
+      width: 140px;
+      border: 2px solid @grayDark;
+      border-radius: 5px;
+      height: 30px;
+
+      li {
+        display: block;
+        width: 50%;
+        float: left;
+        text-transform: uppercase;
+        padding: 5px 0;
+        font-weight: bold;
+        text-align: center;
+        font-size: 10px;
+        color: white;
+
+        &.enabled {
+          background-color: @green;
+        }
+
+        &.disabled {
+          background-color: @gray4;
+        }
+
+         a {
+          color: @grayDark;
+        }
       }
     }
 

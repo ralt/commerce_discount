@@ -27,6 +27,16 @@ class CommerceDiscountViewsController extends EntityDefaultViewsController {
       'real field' => 'discount_id',
     );
 
+    // Show enable / disable widget.
+    $data['commerce_discount']['enable_disable'] = array(
+      'title' => t('Enable / Disable'),
+      'help' => t('Display an Enable / Disable widget.'),
+      'field' => array(
+        'handler' => 'commerce_discount_handler_field_enable_disable',
+      ),
+      'real field' => 'discount_id',
+    );
+
     return $data;
   }
 

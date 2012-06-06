@@ -16,4 +16,5 @@ files[] = includes/commerce_discount_offer.class.inc
 
 ; Views files
 files[] = includes/views/handlers/commerce_discount_handler_field_operations_dropbutton.inc
+files[] = includes/views/handlers/commerce_discount_handler_field_enable_disable.inc
 
