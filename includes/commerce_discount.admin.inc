@@ -98,7 +98,6 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
     '#options' => $options,
     '#required' => TRUE,
     '#default_value' => $commerce_discount->type,
-    '#disabled' => $op != 'add',
     '#ajax' => array(
        'callback' => 'commerce_discount_fields_ajax_callback',
        'wrapper' => 'commerce-discount-fields-wrapper',

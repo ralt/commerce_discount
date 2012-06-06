@@ -32,7 +32,6 @@ function commerce_discount_inline_offer_form($form, &$form_state) {
     '#options' => $options,
     '#required' => TRUE,
     '#default_value' => $offer->type,
-    '#disabled' => $form['#op'] != 'add',
     '#ajax' => array(
        'callback' => 'commerce_discount_inline_offer_form_ajax',
        'wrapper' => $form['#ief_wrapper'],
