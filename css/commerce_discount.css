@@ -12,6 +12,8 @@
   background-color:#0089c9;
   color:white;
 }
+.ajax-progress-throbber { position:absolute; }
+.ajax-progress-throbber .message { display:none; }
 .radio-buttons {
   background:#f0f0f0;
   padding:15px;
