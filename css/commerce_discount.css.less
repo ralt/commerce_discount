@@ -17,6 +17,14 @@
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.36, rgb(252,253,252)), color-stop(0.68, rgb(240,240,240)));
 }
 
+@clearfix {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
 .box {
   background: @gray;
   padding: 15px;
@@ -27,6 +35,7 @@
   margin-right: 20px; // LTR
   background-color: @grayLight;
   color: black;
+  border-radius: 5px;
 }
 
 .btn-selected {
@@ -139,6 +148,7 @@
 
   #edit-enabled .form-item {
     float: left; // LTR
+    margin-top: 10px;
 
     label {
       margin: 0;
@@ -202,7 +212,10 @@ fieldset.form-wrapper {
 
 .field-name-commerce-discount-date .fieldset-wrapper {
   .box;
-  height: 50px;
+
+  &:after {
+    @clearfix;
+  }
 
   .container-inline-date {
     float: left;
@@ -245,11 +258,15 @@ fieldset.form-wrapper {
   .box;
 
   & > div {
-    float: left;
-    margin-left: 30px;
+    float: left; // LTR
+    margin-left: 30px; // LTR
 
     &:first-child {
       margin-left: 0;
+    }
+
+    input[disabled] {
+     background: #eeeeee;
     }
   }
 
@@ -299,7 +316,7 @@ fieldset.form-wrapper {
       li {
         display: block;
         width: 50%;
-        float: left;
+        float: left; // LTR
         text-transform: uppercase;
         padding: 5px 0;
         font-weight: bold;
