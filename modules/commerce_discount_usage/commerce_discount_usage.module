@@ -111,7 +111,7 @@ function commerce_discount_usage_commerce_discount_rule_build($rule, $discount) 
   }
 
   // Add condition to check usage didn't reach max uses.
-  $rule->condition('commerce_discount_usage_uses', array(
+  $rule->condition('commerce_discount_usage_condition', array(
     'commerce_discount' => $discount->name,
   ));
 }

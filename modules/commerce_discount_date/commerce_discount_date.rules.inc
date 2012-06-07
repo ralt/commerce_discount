@@ -2,17 +2,17 @@
 
 /**
  * @file
- * Rules integration for the Commerce discount usage module.
+ * Rules integration for the Commerce discount date module.
  */
 
 /**
  * Implements hook_rules_condition_info().
  */
-function commerce_discount_usage_rules_condition_info() {
+function commerce_discount_date_rules_condition_info() {
   $items = array();
 
-  $items['commerce_discount_usage_condition'] = array(
-    'label' => t('Check discount max usage'),
+  $items['commerce_discount_date_condition'] = array(
+    'label' => t('Check discount promotion dates'),
     'group' => t('Commerce Discount'),
     'parameter' => array(
       'commerce_discount' => array(
@@ -21,7 +21,7 @@ function commerce_discount_usage_rules_condition_info() {
         'options list' => 'commerce_discount_entity_list',
       ),
     ),
-    'base' => 'commerce_discount_usage_condition',
+    'base' => 'commerce_discount_date_condition',
   );
 
   return $items;
@@ -30,9 +30,9 @@ function commerce_discount_usage_rules_condition_info() {
 /**
  * Rules condition: Check discount can be applied.
  */
-function commerce_discount_usage_condition($discount_name) {
+function commerce_discount_date_condition($discount_name) {
   $wrapper = entity_metadata_wrapper('commerce_discount', $discount_name);
-  $uses = $wrapper->commerce_discount_uses->value() ? $wrapper->commerce_discount_uses->value() : 0;
-  return $uses < $wrapper->commerce_discount_max_uses->value();
+  $time = time();
+  return $time >= $wrapper->commerce_discount_date->value->value() && $time >= $wrapper->commerce_discount_date->value2->value();
 }
 

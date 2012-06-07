@@ -79,3 +79,19 @@ function commerce_discount_date_after_build($element, $form_state) {
 
   return $element;
 }
+
+/**
+ * Implements hook_commerce_discount_rule_build().
+ */
+function commerce_discount_date_commerce_discount_rule_build($rule, $discount) {
+  $wrapper = entity_metadata_wrapper('commerce_discount', $discount);
+  if (!$wrapper->commerce_discount_date->value()) {
+    // No need to add a condition.
+    return;
+  }
+
+  // Add condition to check usage didn't reach max uses.
+  $rule->condition('commerce_discount_date_condition', array(
+    'commerce_discount' => $discount->name,
+  ));
+}

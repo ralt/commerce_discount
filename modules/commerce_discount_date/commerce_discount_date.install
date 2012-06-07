@@ -29,7 +29,7 @@ function commerce_discount_date_install() {
       ),
     ),
     'field_name' => 'commerce_discount_date',
-    'type' => 'datetime',
+    'type' => 'datestamp',
     'locked' => TRUE,
   );
   field_create_field($field);
