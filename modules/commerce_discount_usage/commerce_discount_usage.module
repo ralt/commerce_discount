@@ -81,3 +81,37 @@ function commerce_discount_usage_form_commerce_discount_form_alter(&$form, $form
   $form['commerce_discount_fields']['commerce_discount_max_uses']['discount_used']['#title'] = t('Discount used');
   $form['commerce_discount_fields']['commerce_discount_max_uses']['discount_used']['#weight'] = 10;
 }
+
+/**
+ * Implements commerce_line_item_insert().
+ *
+ * Set the usage count.
+ */
+function commerce_discount_usage_commerce_line_item_insert($line_item) {
+  if ($line_item->type != 'commerce_discount') {
+    return;
+  }
+
+  $wrapper = entity_metadata_wrapper('commerce_line_item', $line_item);
+  $uses = $wrapper->commerce_discount->commerce_discount_uses->value() ? $wrapper->commerce_discount->commerce_discount_uses->value() + 1 : 1;
+  $discount_wrapper = $wrapper->commerce_discount;
+  $discount_wrapper->commerce_discount_uses->set($uses);
+  $discount_wrapper->save();
+}
+
+/**
+ * Implements hook_commerce_discount_rule_build().
+ */
+function commerce_discount_usage_commerce_discount_rule_build($rule, $discount) {
+  $wrapper = entity_metadata_wrapper('commerce_discount', $discount);
+
+  if (!$wrapper->commerce_discount_max_uses->value()) {
+    // No need to add a condition.
+    return;
+  }
+
+  // Add condition to check usage didn't reach max uses.
+  $rule->condition('commerce_discount_usage_uses', array(
+    'commerce_discount' => $discount->name,
+  ));
+}
