@@ -163,11 +163,13 @@ fieldset.form-wrapper .fieldset-legend {
 .field-name-commerce-discount-date .fieldset-wrapper .container-inline-date .date-padding { padding:0; }
 .field-name-commerce-discount-date .fieldset-wrapper .container-inline-date .description { display:none; }
 .field-name-commerce-discount-date .fieldset-wrapper .container-inline-date .form-item { padding:0; }
+.field-name-commerce-discount-date .fieldset-wrapper .container-inline-date .date-padding { float:left; }
 .field-name-commerce-discount-date .fieldset-wrapper .container-inline-date .date-padding input.form-text { width:55px; }
 .field-name-commerce-discount-date .fieldset-wrapper .container-inline-date .date-padding > .form-item:first-child input.form-text {
   width:100px;
   background:white url('../../date/date_api/images/calendar.png') no-repeat 86px 1px;
 }
+.field-name-commerce-discount-date .fieldset-wrapper .container-inline-date > .form-item { border:none; }
 .field-name-commerce-discount-date .fieldset-wrapper .container-inline-date label {
   display:block;
   float:left;

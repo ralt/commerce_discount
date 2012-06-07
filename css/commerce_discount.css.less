@@ -234,13 +234,22 @@ fieldset.form-wrapper {
       padding: 0;
     }
 
-    .date-padding input.form-text {
-      width: 55px;
+    .date-padding {
+      float: left; // LTR
+
+      input.form-text {
+        width: 55px;
+      }
+
+      & > .form-item:first-child input.form-text {
+        // TODO: For some reason this icon isn't added.
+        width: 100px;
+        background: white url('../../date/date_api/images/calendar.png') no-repeat 86px 1px;
+      }
     }
 
-    .date-padding > .form-item:first-child input.form-text {
-      width: 100px;
-      background: white url('../../date/date_api/images/calendar.png') no-repeat 86px 1px;
+    & > .form-item {
+      border: none;
     }
 
     label {
