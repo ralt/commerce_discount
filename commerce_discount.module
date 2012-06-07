@@ -171,6 +171,12 @@ function commerce_discount_form_features_export_form_alter(&$form, $from_state) 
  */
 function commerce_discount_form_commerce_discount_form_alter(&$form, $form_state) {
   if (empty($form['commerce_discount_fields']['#entity']->discount_id)) {
+    // Entity is new.
+    return;
+  }
+
+  if (!empty($form_state['triggering_element']['#ajax'])) {
+    // We are inside an Ajax call.
     return;
   }
 
