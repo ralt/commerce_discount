@@ -65,7 +65,7 @@ function commerce_discount_date_form_commerce_discount_form_alter(&$form, $form_
  * @return
  *   The altered date field.
  */
-function commerce_discount_date_after_build($element) {
+function commerce_discount_date_after_build($element, $form_state) {
   // Reset the titles.
   $element[LANGUAGE_NONE][0]['value']['#title'] = t('Start date');
   $element[LANGUAGE_NONE][0]['value2']['#title'] = t('End date');
@@ -79,14 +79,6 @@ function commerce_discount_date_after_build($element) {
   unset($element[LANGUAGE_NONE][0]['value2']['#states']);
   // Remove the "show end date" checkbox.
   unset($element[LANGUAGE_NONE][0]['show_todate']);
-
-  // When creating a new discount, show empty dates.
-  if (!empty($element[LANGUAGE_NONE][0]['#entity']->is_new)) {
-    $element[LANGUAGE_NONE][0]['value']['date']['#value'] = '';
-    $element[LANGUAGE_NONE][0]['value']['time']['#value'] = '';
-    $element[LANGUAGE_NONE][0]['value2']['date']['#value'] = '';
-    $element[LANGUAGE_NONE][0]['value2']['time']['#value'] = '';
-  }
 
   return $element;
 }

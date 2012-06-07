@@ -200,7 +200,7 @@ function commerce_discount_commerce_discount_insert($entity) {
 }
 
 /**
- * Implements hook_commerce_discount_insert().
+ * Implements hook_commerce_discount_update().
  *
  * Rebuild Rules configuration.
  */
