@@ -190,12 +190,12 @@ function commerce_discount_form_validate($form, $form_state) {
 function commerce_discount_form_submit(&$form, &$form_state) {
   $commerce_discount = entity_ui_form_submit_build_entity($form, $form_state);
   $commerce_discount->save();
-  $form_state['redirect'] = 'admin/commerce/commerce-discounts';
+  $form_state['redirect'] = 'admin/commerce/store/commerce-discounts';
 }
 
 /**
  * Form API submit callback for the delete button.
  */
 function commerce_discount_form_submit_delete(&$form, &$form_state) {
-  $form_state['redirect'] = 'admin/commerce/commerce-discounts/manage/' . $form_state['commerce_discount']->name . '/delete';
+  $form_state['redirect'] = 'admin/commerce/store/commerce-discounts/manage/' . $form_state['commerce_discount']->name . '/delete';
 }
