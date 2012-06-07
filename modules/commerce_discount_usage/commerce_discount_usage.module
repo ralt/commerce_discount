@@ -10,30 +10,27 @@
  *
  * Add commerce discount usage fields.
  *
- * @see commerce_discount_date_install()
+ * @see commerce_discount_usage_install()
  */
 function commerce_discount_usage_modules_enabled($modules) {
-  foreach ($modules as $module) {
-    if ($info = module_invoke($module, 'commerce_discount_type_info'))
-    foreach ($info as $type => $value) {
-      if (!field_info_instance('commerce_discount', 'commerce_discount_uses', $type)) {
-        $instance = array(
-          'field_name' => 'commerce_discount_uses',
-          'entity_type' => 'commerce_discount',
-          'bundle' => $type,
-          'label' => t('Discount uses'),
-        );
-        field_create_instance($instance);
-      }
-      if (!field_info_instance('commerce_discount', 'commerce_discount_max_uses', $type)) {
-        $instance = array(
-          'field_name' => 'commerce_discount_max_uses',
-          'entity_type' => 'commerce_discount',
-          'bundle' => $type,
-          'label' => t('Discount max uses'),
-        );
-        field_create_instance($instance);
-      }
+  foreach (commerce_discount_types() as $type => $value) {
+    if (!field_info_instance('commerce_discount', 'commerce_discount_uses', $type)) {
+      $instance = array(
+        'field_name' => 'commerce_discount_uses',
+        'entity_type' => 'commerce_discount',
+        'bundle' => $type,
+        'label' => t('Discount uses'),
+      );
+      field_create_instance($instance);
+    }
+    if (!field_info_instance('commerce_discount', 'commerce_discount_max_uses', $type)) {
+      $instance = array(
+        'field_name' => 'commerce_discount_max_uses',
+        'entity_type' => 'commerce_discount',
+        'bundle' => $type,
+        'label' => t('Discount max uses'),
+      );
+      field_create_instance($instance);
     }
   }
 }

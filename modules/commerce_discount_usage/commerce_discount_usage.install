@@ -6,7 +6,7 @@
  * Create uses and max_uses fields for commerce discounts.
  * The instance will be added for every newley created bundle.
  *
- * @see commerce_discount_modules_enabled()
+ * @see commerce_discount_usage_modules_enabled()
  */
 function commerce_discount_usage_install() {
   // Clear field info cache, so entity reference field can be used.

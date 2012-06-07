@@ -13,26 +13,23 @@
  * @see commerce_discount_date_install()
  */
 function commerce_discount_date_modules_enabled($modules) {
-  foreach ($modules as $module) {
-    if ($info = module_invoke($module, 'commerce_discount_type_info'))
-    foreach ($info as $type => $value) {
-      if (!field_info_instance('commerce_discount', 'commerce_discount_date', $type)) {
-        $instance = array(
-          'field_name' => 'commerce_discount_date',
-          'entity_type' => 'commerce_discount',
-          'bundle' => $type,
-          'label' => t('Promotion dates'),
-          'widget' => array(
-            'module' => 'date',
-            'type' => 'date_popup',
-          ),
-          'settings' => array(
-            'default_value' => 'blank',
-            'default_value2' => 'blank',
-          ),
-        );
-        field_create_instance($instance);
-      }
+  foreach (commerce_discount_types() as $type => $value) {
+    if (!field_info_instance('commerce_discount', 'commerce_discount_date', $type)) {
+      $instance = array(
+        'field_name' => 'commerce_discount_date',
+        'entity_type' => 'commerce_discount',
+        'bundle' => $type,
+        'label' => t('Promotion dates'),
+        'widget' => array(
+          'module' => 'date',
+          'type' => 'date_popup',
+        ),
+        'settings' => array(
+          'default_value' => 'blank',
+          'default_value2' => 'blank',
+        ),
+      );
+      field_create_instance($instance);
     }
   }
 }
