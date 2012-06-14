@@ -30,7 +30,7 @@ function hook_commerce_discount_type_info() {
   $types['product_discount'] = array(
     'label' => t('Product Discount'),
     'event' => 'commerce_product_calculate_sell_price',
-    'entity type' => 'commerce_product',
+    'entity type' => 'commerce_line_item',
   );
 
   return $types;

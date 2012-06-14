@@ -153,6 +153,29 @@ function commerce_discount_install() {
     'required' => TRUE,
   );
   field_create_instance($instance);
+
+  $field = array(
+    'entity_types' => array('commerce_order'),
+    'settings' => array(
+      'handler' => 'base',
+      'target_type' => 'commerce_discount',
+      'handler_settings' => array(
+        'target_bundles' => array(),
+      ),
+    ),
+    'field_name' => 'commerce_discount',
+    'type' => 'entityreference',
+    'locked' => TRUE,
+  );
+  field_create_field($field);
+
+  $instance = array(
+    'field_name' => 'commerce_discount',
+    'entity_type' => 'commerce_order',
+    'bundle' => 'commerce_order',
+    'label' => t('Discount reference'),
+  );
+  field_create_instance($instance);
 }
 
 /**

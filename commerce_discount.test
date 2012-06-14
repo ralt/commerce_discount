@@ -21,7 +21,7 @@ class CommerceDiscountTest extends CommerceBaseTestCase {
     return array(
       'name' => 'Discounts',
       'description' => 'Test discounts UI and functionality',
-      'group' => 'Drupal Commerce',
+      'group' => 'Commerce discounts',
     );
   }
 
@@ -40,11 +40,17 @@ class CommerceDiscountTest extends CommerceBaseTestCase {
 
   /**
    * Implementation of setUp().
+   *
+   * @param $sub_module
+   *   Used by inherting classes to turn themselves on.
    */
-  function setUp() {
-    // Enable all commerce modules + all commerce_discount modules.
+  public function setUp($sub_module = FALSE) {
+    // Enable all commerce modules + commerce_discount.
     $modules = parent::setUpHelper('all');
     $modules[] = 'commerce_discount';
+    if ($sub_module) {
+      $modules[] = $sub_module;
+    }
     parent::setUp($modules);
 
     // User creation for different operations.
@@ -61,7 +67,7 @@ class CommerceDiscountTest extends CommerceBaseTestCase {
   /**
    * Access to commerce discounts admin.
    */
-  public function _testCommerceDiscountUIAccessDiscountsListing() {
+  public function testCommerceDiscountUIAccessDiscountsListing() {
     // Login with customer.
     $this->drupalLogin($this->store_customer);
     // Check the access to the profiles listing.
@@ -81,9 +87,9 @@ class CommerceDiscountTest extends CommerceBaseTestCase {
   }
 
   /**
-   * Test the add product process.
+   * Test the add discount UI.
    */
-  public function _testCommerceDiscountUIAddDiscount() {
+  public function testCommerceDiscountUIAddDiscount() {
     // Login with normal user.
     $this->drupalLogin($this->store_customer);
 
@@ -101,10 +107,9 @@ class CommerceDiscountTest extends CommerceBaseTestCase {
     $this->assertResponse(200, t('Store admin user is allowed to add a discount using the admin interface'));
 
     // Check the integrity of the add form.
-    $this->pass(t('Test the integrity of the discount add form:'));
     $this->assertFieldByName('commerce_discount_type', NULL, t('Discount type field is present'));
     $this->assertFieldByName('label', NULL, t('Label field is present'));
-    $this->assertFieldByName('commerce_discount_fields[commerce_discount_offer][und][form][commerce_discount_offer_type]', NULL, t('Offer type field is present'));
+    $this->assertFieldByName('commerce_discount_fields[commerce_discount_offer][und][form][type]', NULL, t('Offer type field is present'));
     $this->assertFieldByName('commerce_discount_fields[commerce_discount_offer][und][form][commerce_fixed_amount][und][0][amount]', NULL, t('Amount field is present'));
     $this->assertFieldByName('enabled', NULL, t('Status field is present'));
     $this->assertFieldById('edit-submit', t('Save commerce discount'), t('Save discount button is present'));
@@ -131,7 +136,6 @@ class CommerceDiscountTest extends CommerceBaseTestCase {
     $wrapper = entity_metadata_wrapper('commerce_discount', $discount);
 
     // Check the stored discount.
-    $this->pass(t('Test the discount creation:'));
     $this->assertTrue($discount->label == $values['label'], t('Label stored correctly.'));
     $this->assertTrue($discount->name == $values['name'], t('Name stored correctly.'));
     $this->assertTrue($discount->enabled == 1, t('Enabled stored correctly.'));
@@ -140,7 +144,6 @@ class CommerceDiscountTest extends CommerceBaseTestCase {
     $this->assertTrue($wrapper->commerce_discount_offer->commerce_fixed_amount->amount->value() == 1277, t('Amount stored correctly.'));
 
     // Check the discounts listing
-    $this->pass(t('Test the discounts listing after saving the discount'));
     $this->assertTrue($this->url == url('admin/commerce/store/commerce-discounts', array('absolute' => TRUE)), t('Landing page after save is the discounts list.'));
     $this->assertText($values['label'], t('Label of the discount is present.'));
   }
@@ -151,8 +154,7 @@ class CommerceDiscountTest extends CommerceBaseTestCase {
   public function testCommerceDiscountFixedOrderDiscount() {
     // Testing fixed discount.
     // Create a fixed order discount of $3.
-    $discount_fixed_amount = 300;
-    $discount = $this->createDiscount('order_discount', 'fixed_amount', $discount_fixed_amount);
+    $discount = $this->createDiscount('order_discount', 'fixed_amount', 300);
 
     // Create an order.
     $order = $this->createDummyOrder($this->store_customer->uid, array($this->product->product_id => 1), 'complete');
@@ -164,18 +166,57 @@ class CommerceDiscountTest extends CommerceBaseTestCase {
   /**
    * Test percentage order discounts.
    */
-  public function testCommerceDiscountFixedOrderDiscount() {
-        // Create another discount to make sure the discount isn't applied when it's
-    // disabled.
-
+  public function testCommerceDiscountPercentageOrderDiscount() {
     // Testing precentage discount.
-    // Create a percentage order discount of 3.5%.
+    // Create a percentage order discount of 5%.
     $discount = $this->createDiscount('order_discount', 'percentage', 5);
     // Create a completed order.
-    $order = $this->createDummyOrder($this->store_customer->uid, array($product->product_id => 1), 'complete');
+    $order = $this->createDummyOrder($this->store_customer->uid, array($this->product->product_id => 1), 'complete');
     $wrapper = entity_metadata_wrapper('commerce_order', $order);
     // Check if the discount was applied on the order total price.
-    $this->assertTrue($wrapper->commerce_order_total->amount->value() == 2300 * 0.95, t('Percentage order discount is deducted correctly.'));
+    $this->assertTrue($wrapper->commerce_order_total->amount->value() == 1000 * 0.95, t('Percentage order discount is deducted correctly.'));
+  }
+
+  /**
+   * Test fixed product discounts.
+   */
+  public function testCommerceDiscountFixedProductDiscount() {
+    $discount = $this->createDiscount('product_discount', 'fixed_amount', 300);
+
+    // Create an order.
+    $order = $this->createDummyOrder($this->store_customer->uid, array($this->product->product_id => 1), 'complete');
+    $wrapper = entity_metadata_wrapper('commerce_order', $order);
+
+    // Invoke line item price re-calculation.
+    $line_item = $wrapper->commerce_line_items->get(0)->value();
+    rules_invoke_event('commerce_product_calculate_sell_price', $line_item);
+
+    // Check if the discount was added as a component to the line item.
+    $line_item_wrapper = entity_metadata_wrapper('commerce_line_item', $line_item);
+    $price_data = $line_item_wrapper->commerce_unit_price->data->value();
+
+    $this->assertTrue($price_data['components'][1]['price']['amount'] == -300, t('Fixed product discount is added as a price compoennt to the line item.'));
+  }
+
+  /**
+   * Test percentage product discounts.
+   */
+  public function testCommerceDiscountPercentageProductDiscount() {
+    $discount = $this->createDiscount('product_discount', 'percentage', 5);
+
+    // Create an order.
+    $order = $this->createDummyOrder($this->store_customer->uid, array($this->product->product_id => 1), 'complete');
+    $wrapper = entity_metadata_wrapper('commerce_order', $order);
+
+    // Invoke line item price re-calculation.
+    $line_item = $wrapper->commerce_line_items->get(0)->value();
+    rules_invoke_event('commerce_product_calculate_sell_price', $line_item);
+
+    // Check if the discount was added as a component to the line item.
+    $line_item_wrapper = entity_metadata_wrapper('commerce_line_item', $line_item);
+    $price_data = $line_item_wrapper->commerce_unit_price->data->value();
+
+    $this->assertTrue($price_data['components'][1]['price']['amount'] == -500, t('Percentage product discount is added as a price compoennt to the line item.'));
   }
 
   /**

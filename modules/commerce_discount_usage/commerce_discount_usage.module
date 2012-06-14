@@ -78,23 +78,29 @@ function commerce_discount_usage_form_commerce_discount_form_alter(&$form, $form
   $form['commerce_discount_fields']['commerce_discount_uses'][LANGUAGE_NONE][0]['value']['#access'] = FALSE;
 
   $form['commerce_discount_fields']['commerce_discount_max_uses']['discount_used']['#disabled'] = TRUE;
+  if ($form_state['op'] == 'add') {
+    $form['commerce_discount_fields']['commerce_discount_max_uses']['discount_used']['#access'] = FALSE;
+  }
   $form['commerce_discount_fields']['commerce_discount_max_uses']['discount_used']['#title'] = t('Discount used');
   $form['commerce_discount_fields']['commerce_discount_max_uses']['discount_used']['#weight'] = 10;
 }
 
 /**
- * Implements commerce_line_item_insert().
+ * Implements hook_commerce_order_insert().
  *
  * Set the usage count.
  */
-function commerce_discount_usage_commerce_line_item_insert($line_item) {
-  if ($line_item->type != 'commerce_discount') {
+function commerce_discount_usage_commerce_order_insert($commerce_order) {
+  $wrapper = entity_metadata_wrapper('commerce_order', $commerce_order);
+  if (!$wrapper->commerce_discount->value()) {
     return;
   }
 
-  $wrapper = entity_metadata_wrapper('commerce_line_item', $line_item);
   $uses = $wrapper->commerce_discount->commerce_discount_uses->value() ? $wrapper->commerce_discount->commerce_discount_uses->value() + 1 : 1;
-  $discount_wrapper = $wrapper->commerce_discount;
+
+  // Update the discount_uses field.
+  $discount = commerce_discount_load($wrapper->commerce_discount->discount_id->value());
+  $discount_wrapper = entity_metadata_wrapper('commerce_discount', $discount);
   $discount_wrapper->commerce_discount_uses->set($uses);
   $discount_wrapper->save();
 }
