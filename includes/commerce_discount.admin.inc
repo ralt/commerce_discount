@@ -23,6 +23,11 @@ class CommerceDiscountUIController extends EntityDefaultUIController {
       if ($key != 'commerce_discount_fields') {
         $entity->$key = $value;
       }
+      else {
+        $discount_offer = $value['commerce_discount_offer'][LANGUAGE_NONE]['form'];
+        unset($discount_offer['actions']);
+        $entity->commerce_discount_offer['commerce_discount_fields'] = $discount_offer;
+      }
     }
     // Invoke all specified builders for copying form values to entity
     // properties.

@@ -55,6 +55,9 @@ function commerce_discount_entity_info() {
     'bundles' => array(),
     'module' => 'commerce_discount',
     'metadata controller class' => 'EntityDefaultMetadataController',
+    'inline entity form' => array(
+      'controller' => 'CommerceDiscountOfferInlineEntityFormController',
+    ),
   );
   foreach (commerce_discount_offer_types() as $type => $info) {
     $items['commerce_discount_offer']['bundles'][$type] = array(
@@ -63,27 +66,6 @@ function commerce_discount_entity_info() {
   }
 
   return $items;
-}
-
-/**
- * Implements hook_inline_entity_type_info().
- */
-function commerce_discount_inline_entity_type_info() {
-  $types = array();
-  $types['commerce_discount_offer'] = array(
-    'file' => drupal_get_path('module', 'commerce_discount') . '/includes/commerce_discount_offer.type.inc',
-    'callbacks' => array(
-      'form' => 'commerce_discount_inline_offer_form',
-    ),
-    // The labels are not used currently.
-    'labels' => array(
-      'add fieldset' => t('Add new offer'),
-      'add button' => t('Add offer'),
-      'save button' => t('Save offer'),
-    ),
-  );
-
-  return $types;
 }
 
 /**
@@ -247,9 +229,10 @@ function commerce_discount_set_enabled($discount_id, $enabled, $type = 'ajax') {
     return;
   }
 
+
   $entity = entity_load_single('commerce_discount', $discount_id);
   $entity->enabled = $enabled;
-  entity_save('commerce_discount', $entity);
+  $entity->save();
 
   if ($type == 'ajax') {
     $html = commerce_discount_state_switch_content($enabled, $discount_id);

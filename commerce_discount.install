@@ -107,7 +107,9 @@ function commerce_discount_install() {
       'handler' => 'base',
       'target_type' => 'commerce_discount_offer',
       'handler_settings' => array(
-        'target_bundles' => array(),
+        // Default to fixed_amount, and others will be selectable from the
+        // IEF widget.
+        'target_bundles' => array('fixed_amount'),
       ),
     ),
     'field_name' => 'commerce_discount_offer',
