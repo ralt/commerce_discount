@@ -164,7 +164,6 @@ function commerce_discount_apply_percentage_discount($line_item_wrapper, $discou
   $data = commerce_price_component_add($line_item_wrapper->commerce_unit_price->value(), 'commerce_discount', $price_component, FALSE, TRUE);
 
   $line_item_wrapper->commerce_unit_price->data->set($data);
-  $line_item_wrapper->save();
 }
 
 /**
