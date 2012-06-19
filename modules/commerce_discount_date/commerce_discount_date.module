@@ -74,8 +74,9 @@ function commerce_discount_date_after_build($element, $form_state) {
 
   // Ignore the "Show end date" checkbox.
   unset($element[LANGUAGE_NONE][0]['value2']['#states']);
-  // Remove the "show end date" checkbox.
-  unset($element[LANGUAGE_NONE][0]['show_todate']);
+
+  // Check the "show end date" checkbox.
+  $element[LANGUAGE_NONE][0]['show_todate']['#checked'] = TRUE;
 
   return $element;
 }
