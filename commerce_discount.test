@@ -6,25 +6,17 @@
  */
 
 /**
- * Testing commerce discounts UI and functionality.
+ * Base class for commerce discount tests.
  */
-class CommerceDiscountTest extends CommerceBaseTestCase {
+class CommerceDiscountTestBase extends CommerceBaseTestCase {
   /**
    * Dummy commerce_product.
    */
   protected $product;
 
   /**
-   * Implementation of getInfo().
+   * Overrides CommerceBaseTestCase::permissionBuilder().
    */
-  public static function getInfo() {
-    return array(
-      'name' => 'Discounts',
-      'description' => 'Test discounts UI and functionality',
-      'group' => 'Commerce discounts',
-    );
-  }
-
   protected function permissionBuilder($set) {
     $permissions = parent::permissionBuilder($set);
 
@@ -62,6 +54,69 @@ class CommerceDiscountTest extends CommerceBaseTestCase {
 
     // Set the default country to US.
     variable_set('site_default_country', 'US');
+  }
+
+  /**
+   * Create a discount.
+   *
+   * @param $discount_type
+   *   The discount type; Either 'order_discount' or 'product_discount'.
+   * @param $offer_type
+   *   The discount offer type; Either 'fixed_amount' or 'percentage'.
+   * @param $amount
+   *   The discount offer amount.
+   *
+   * @return
+   *   The newly created commerce_discount entity.
+   */
+  protected function createDiscount($discount_type, $offer_type, $amount) {
+    // Create the discount offer.
+    $commerce_discount_offer = entity_create('commerce_discount_offer', array('type' => $offer_type));
+    $wrapper = entity_metadata_wrapper('commerce_discount_offer', $commerce_discount_offer);
+    switch ($offer_type) {
+      case 'fixed_amount':
+        $wrapper->commerce_fixed_amount->amount->set($amount);
+        $wrapper->commerce_fixed_amount->currency_code->set('USD');
+        break;
+
+      case 'percentage':
+        $wrapper->commerce_percentage->set($amount);
+        break;
+    }
+    $wrapper->save();
+
+
+    // Create the discount.
+    $values = array(
+      'name' => $discount_type . '_' . $offer_type,
+      'label' => $discount_type . '_' . $offer_type,
+      'type' => $discount_type,
+      'enabled' => TRUE,
+      'status' => TRUE,
+    );
+    $commerce_discount = entity_create('commerce_discount', $values);
+    $wrapper = entity_metadata_wrapper('commerce_discount', $commerce_discount);
+    $wrapper->commerce_discount_offer->set($commerce_discount_offer);
+    $wrapper->save();
+
+    return $wrapper->value();
+  }
+}
+
+
+/**
+ * Testing commerce discounts UI and functionality.
+ */
+class CommerceDiscountTest extends CommerceDiscountTestBase {
+  /**
+   * Implementation of getInfo().
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'Discounts',
+      'description' => 'Test discounts UI and functionality',
+      'group' => 'Commerce discounts',
+    );
   }
 
   /**
@@ -158,6 +213,7 @@ class CommerceDiscountTest extends CommerceBaseTestCase {
 
     // Create an order.
     $order = $this->createDummyOrder($this->store_customer->uid, array($this->product->product_id => 1), 'complete');
+
     $wrapper = entity_metadata_wrapper('commerce_order', $order);
     // Check if the discount was applied on the order total price.
     $this->assertTrue($wrapper->commerce_order_total->amount->value() == 700, t('Fixed order discount is deducted correctly.'));
@@ -174,7 +230,7 @@ class CommerceDiscountTest extends CommerceBaseTestCase {
     $order = $this->createDummyOrder($this->store_customer->uid, array($this->product->product_id => 1), 'complete');
     $wrapper = entity_metadata_wrapper('commerce_order', $order);
     // Check if the discount was applied on the order total price.
-    $this->assertTrue($wrapper->commerce_order_total->amount->value() == 1000 * 0.95, t('Percentage order discount is deducted correctly.'));
+    $this->assertTrue($wrapper->commerce_order_total->amount->value() == 950, t('Percentage order discount is deducted correctly.'));
   }
 
   /**
@@ -216,52 +272,6 @@ class CommerceDiscountTest extends CommerceBaseTestCase {
     $line_item_wrapper = entity_metadata_wrapper('commerce_line_item', $line_item);
     $price_data = $line_item_wrapper->commerce_unit_price->data->value();
 
-    $this->assertTrue($price_data['components'][1]['price']['amount'] == -500, t('Percentage product discount is added as a price compoennt to the line item.'));
-  }
-
-  /**
-   * Create a discount.
-   *
-   * @param $discount_type
-   *   The discount type; Either 'order_discount' or 'product_discount'.
-   * @param $offer_type
-   *   The discount offer type; Either 'fixed_amount' or 'percentage'.
-   * @param $amount
-   *   The discount offer amount.
-   *
-   * @return
-   *   The newly created commerce_discount entity.
-   */
-  protected function createDiscount($discount_type, $offer_type, $amount) {
-    // Create the discount offer.
-    $commerce_discount_offer = entity_create('commerce_discount_offer', array('type' => $offer_type));
-    $wrapper = entity_metadata_wrapper('commerce_discount_offer', $commerce_discount_offer);
-    switch ($offer_type) {
-      case 'fixed_amount':
-        $wrapper->commerce_fixed_amount->amount->set($amount);
-        $wrapper->commerce_fixed_amount->currency_code->set('USD');
-        break;
-
-      case 'percentage':
-        $wrapper->commerce_percentage->set($amount);
-        break;
-    }
-    $wrapper->save();
-
-
-    // Create the discount.
-    $values = array(
-      'name' => $discount_type . '_' . $offer_type,
-      'label' => $discount_type . '_' . $offer_type,
-      'type' => $discount_type,
-      'enabled' => TRUE,
-      'status' => TRUE,
-    );
-    $commerce_discount = entity_create('commerce_discount', $values);
-    $wrapper = entity_metadata_wrapper('commerce_discount', $commerce_discount);
-    $wrapper->commerce_discount_offer->set($commerce_discount_offer);
-    $wrapper->save();
-
-    return $wrapper->value();
+    $this->assertTrue($price_data['components'][1]['price']['amount'] == -50, t('Percentage product discount is added as a price compoennt to the line item.'));
   }
 }
