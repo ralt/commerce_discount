@@ -15,6 +15,7 @@ files[] = includes/commerce_discount.admin.inc
 files[] = includes/commerce_discount.class.inc
 files[] = includes/commerce_discount_offer.class.inc
 files[] = includes/commerce_discount_offer.inline_entity_form.inc
+files[] = includes/commerce_discount.controller.inc
 
 ; Views files
 files[] = includes/views/handlers/commerce_discount_handler_field_operations_dropbutton.inc
