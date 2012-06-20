@@ -88,21 +88,89 @@ function commerce_discount_usage_form_commerce_discount_form_alter(&$form, $form
 /**
  * Implements hook_commerce_order_insert().
  *
- * Set the usage count.
+ * Increment the usage count of applied discounts.
  */
 function commerce_discount_usage_commerce_order_insert($commerce_order) {
   $wrapper = entity_metadata_wrapper('commerce_order', $commerce_order);
-  if (!$wrapper->commerce_discount->value()) {
-    return;
+
+  // Update usage count on all discounts the got attached to this order.
+  foreach ($wrapper->commerce_discount->value() as $commerce_discount) {
+    commerce_discount_usage_update_usage_count($commerce_discount, 1);
   }
+}
 
-  $uses = $wrapper->commerce_discount->commerce_discount_uses->value() ? $wrapper->commerce_discount->commerce_discount_uses->value() + 1 : 1;
+/**
+ * Implements hook_commerce_order_delete().
+ *
+ * Decrement the usage count of applied discounts.
+ */
+function commerce_discount_usage_commerce_order_delete($commerce_order) {
+  $wrapper = entity_metadata_wrapper('commerce_order', $commerce_order);
 
-  // Update the discount_uses field.
-  $discount = commerce_discount_load($wrapper->commerce_discount->discount_id->value());
-  $discount_wrapper = entity_metadata_wrapper('commerce_discount', $discount);
-  $discount_wrapper->commerce_discount_uses->set($uses);
-  $discount_wrapper->save();
+  // Update usage count on all discounts the got attached to this order.
+  foreach ($wrapper->commerce_discount->value() as $commerce_discount) {
+    commerce_discount_usage_update_usage_count($commerce_discount, -1);
+  }
+}
+
+/**
+ * Implements hook_commerce_cart_product_add().
+ *
+ * Increment the usage count of applied discounts.
+ */
+function commerce_discount_usage_commerce_cart_product_add($order, $product, $quantity, $line_item) {
+  $wrapper = entity_metadata_wrapper('commerce_line_item', $line_item);
+  $price_data = $wrapper->commerce_unit_price->data->value();
+  // Search for discount components in the line item price.
+  foreach ($price_data['components'] as $component) {
+    if ($component['name'] != 'commerce_discount') {
+      continue;
+    }
+
+    // When discount found, increment its usage count by one.
+    $discount_name = $component['price']['data']['discount_name'];
+    commerce_discount_usage_update_usage_count($discount_name, 1);
+  }
+}
+
+/**
+ * Implements hook_commerce_cart_product_remove().
+ *
+ * Decrement the usage count of applied discounts.
+ */
+function commerce_discount_usage_commerce_cart_product_remove($order, $product, $quantity, $line_item) {
+  $wrapper = entity_metadata_wrapper('commerce_line_item', $line_item);
+  $price_data = $wrapper->commerce_unit_price->data->value();
+  // Search for discount components in the line item price.
+  foreach ($price_data['components'] as $component) {
+    if ($component['name'] != 'commerce_discount') {
+      continue;
+    }
+
+    // When discount found, decrement its usage count by one.
+    $discount_name = $component['price']['data']['discount_name'];
+    commerce_discount_usage_update_usage_count($discount_name, -1);
+  }
+}
+
+/**
+ * Update the usage counter of a discount.
+ *
+ * @param $commerce_discount
+ *   A discount object.
+ * @param $delta
+ *   Integer to be added to the counter.
+ */
+function commerce_discount_usage_update_usage_count($commerce_discount, $delta) {
+  $wrapper = entity_metadata_wrapper('commerce_discount', $commerce_discount);
+
+  // Select the correct default value, depending on whether the usage is
+  // incremented or decremented.
+  $default = $delta > 0 ? $delta : 0;
+
+  $uses = $wrapper->commerce_discount_uses->value() ? $wrapper->commerce_discount_uses->value() + $delta : $default;
+  $wrapper->commerce_discount_uses->set($uses);
+  $wrapper->save();
 }
 
 /**
