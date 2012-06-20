@@ -204,6 +204,46 @@ class CommerceDiscountTest extends CommerceDiscountTestBase {
   }
 
   /**
+   * Test the importing of commerce discounts.
+   */
+  public function testCommerceDiscountImport() {
+    // Login store admin.
+    $this->drupalLogin($this->store_admin);
+
+    // Access to the admin discount creation page.
+    $this->drupalGet('admin/commerce/store/commerce-discounts/import');
+    $this->assertResponse(200, t('Store admin is allowed in the discounts import page'));
+
+    $exported_discount = '{
+  "name" : "pf",
+  "label" : "PF",
+  "type" : "product_discount",
+  "enabled" : "1",
+  "commerce_discount_offer" : {
+    "type" : "fixed_amount",
+    "commerce_fixed_amount" : { "und" : [
+        {
+          "amount" : "1200",
+          "currency_code" : "USD",
+          "data" : { "components" : [] }
+        }
+      ]
+    },
+    "rdf_mapping" : []
+  },
+  "rdf_mapping" : []
+}';
+
+    // Import the discount.
+    $this->drupalPost(NULL, array('import' => $exported_discount), t('Import'));
+
+    // Export the discount to make sure it's identical to the import string.
+    $discount = commerce_discount_load(1);
+    $export = entity_export('commerce_discount', $discount);
+    $this->assertTrue($exported_discount == $export, t('Exported discount is identical to its origin.'));
+  }
+
+  /**
    * Test fixed order discounts.
    */
   public function testCommerceDiscountFixedOrderDiscount() {

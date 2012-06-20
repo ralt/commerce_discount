@@ -31,6 +31,25 @@ class CommerceDiscountControllerExportable extends EntityAPIControllerExportable
   }
 
   /**
+   * Imports an entity from a string.
+   *
+   * @param string $export
+   *   An exported entity as serialized string.
+   *
+   * @return
+   *   An entity object not yet saved.
+   */
+  public function import($export) {
+    $entity = parent::import($export);
+
+    $discount_offer = $entity->commerce_discount_offer;
+    unset($entity->commerce_discount_offer);
+    $entity->commerce_discount_offer = array('commerce_discount_fields' => $discount_offer);
+
+    return $entity;
+  }
+
+  /**
    * Overridden to handle embedded dicount_offer update.
    */
   public function save($entity, DatabaseTransaction $transaction = NULL) {
