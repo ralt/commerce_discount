@@ -490,16 +490,6 @@ function commerce_discount_offer_type_get_name($type = NULL) {
 }
 
 /**
- * Load a single commerce discount entity.
- *
- * @return
- *   Entity of CommerceDiscount type, or FALSE is none found.
- */
-function commerce_discount_load($discount_id) {
-  return entity_load_single('commerce_discount', $discount_id);
-}
-
-/**
  * Return an array keyed by commerce order type and label as value.
  */
 function commerce_discount_entity_list() {

@@ -123,10 +123,15 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
     '#default_value' => isset($commerce_discount->name) ? $commerce_discount->name : '',
     '#disabled' => $commerce_discount->hasStatus(ENTITY_IN_CODE),
     '#machine_name' => array(
-      'exists' => 'commerce_discount_load',
+      'exists' => '_commerce_discount_name_exists',
       'source' => array('label'),
     ),
     '#description' => t('A unique machine-readable name for this message type. It must only contain lowercase letters, numbers, and underscores.'),
+    // 32 characters minus the 'discount_' prefix.
+    '#maxlength' => 23,
+    // This field should stay LTR even for RTL languages.
+    '#field_prefix' => '<span dir="ltr">discount_',
+    '#field_suffix' => '</span>&lrm;',
   );
 
   $form['commerce_discount_fields'] = array(
@@ -185,8 +190,12 @@ function commerce_discount_fields_ajax_callback($form, &$form_state) {
 /**
  * Form API validation callback for the type form.
  */
-function commerce_discount_form_validate($form, $form_state) {
+function commerce_discount_form_validate($form, &$form_state) {
   field_attach_form_validate('commerce_discount', $form_state['commerce_discount'], $form['commerce_discount_fields'], $form_state);
+
+  if (!empty($form_state['values']['name'])) {
+    form_set_value($form['name'], 'discount_' . $form_state['values']['name'], $form_state);
+  }
 }
 
 /**
@@ -203,4 +212,21 @@ function commerce_discount_form_submit(&$form, &$form_state) {
  */
 function commerce_discount_form_submit_delete(&$form, &$form_state) {
   $form_state['redirect'] = 'admin/commerce/store/commerce-discounts/manage/' . $form_state['commerce_discount']->name . '/delete';
+}
+
+
+/**
+ * Checks if a Discount machine name is taken.
+ *
+ * @param $value
+ *   The machine name, not prefixed with 'discount_'.
+ *
+ * @return
+ *   Whether or not the field machine name is taken.
+ */
+function _commerce_discount_name_exists($value) {
+  // Prefix with 'discount_'.
+  $name = 'discount_' . $value;
+
+  return entity_load_single('commerce_discount', $name);
 }
