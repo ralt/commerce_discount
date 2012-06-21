@@ -17,13 +17,26 @@
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.36, rgb(252,253,252)), color-stop(0.68, rgb(240,240,240)));
 }
 
+
 @clearfix {
-  content: ".";
-  display: block;
-  height: 0;
-  clear: both;
-  visibility: hidden;
+   zoom: 1;
+
+  :before,
+  :after {
+    content: '\0020';
+    display: block;
+    overflow: hidden;
+    visibility: hidden;
+    width: 0;
+    height: 0;
+  }
+
+  :after {
+    clear: both;
+    line-height: 0;
+  }
 }
+
 
 .box {
   background: @gray;
@@ -53,9 +66,9 @@
 
 .radio-buttons {
   .box;
-  height: 45px;
-  padding: 25px 15px 10px 15px;
+  padding: 25px 15px 25px 15px;
   margin-top: 10px;
+  @clearfix;
 
   .form-item {
     float: left; // LTR
@@ -85,6 +98,10 @@
     display: inline;
     margin-right: 15px;
   }
+
+  .form-item, .form-item .form-item {
+    clear: none;
+  }
 }
 
 
@@ -98,6 +115,14 @@
 
   #edit-commerce-discount-type {
     .radio-buttons;
+    @clearfix;
+  }
+}
+
+#edit-commerce-discount-fields-commerce-discount-date {
+
+  .fieldset-wrapper {
+    height: 25px;
   }
 }
 
@@ -334,8 +359,9 @@ fieldset.form-wrapper {
         padding: 5px 0;
         font-weight: bold;
         text-align: center;
-        font-size: 10px;
+        font-size: 12px;
         color: white;
+        line-height: 20px;
 
         &.enabled {
           background-color: @green;

@@ -149,6 +149,10 @@ function commerce_discount_form_features_export_form_alter(&$form, $from_state) 
  * Disable alteration of discounts with overriden rules.
  */
 function commerce_discount_form_commerce_discount_form_alter(&$form, $form_state) {
+  // Add clearfix to the discount type container.
+  $form['commerce_discount_type']['#attributes']['class'][] = 'clearfix';
+  $form['commerce_discount_fields']['commerce_discount_offer']['und']['form']['type']['#attributes']['class'][] = 'clearfix';
+
   if (empty($form['commerce_discount_fields']['#entity']->discount_id)) {
     // Entity is new.
     return;
