@@ -52,6 +52,12 @@ class CommerceDiscountTestBase extends CommerceBaseTestCase {
     // Create a dummy product.
     $this->product = $this->createDummyProduct('PROD-01', 'Product One', 1000);
 
+    // Create a dummy product display content type.
+    $this->createDummyProductDisplayContentType();
+
+    // Create a product display node.
+    $this->product_node = $this->createDummyProductNode(array($this->product->product_id), 'Product One node');
+
     // Set the default country to US.
     variable_set('site_default_country', 'US');
   }
@@ -313,5 +319,30 @@ class CommerceDiscountTest extends CommerceDiscountTestBase {
     $price_data = $line_item_wrapper->commerce_unit_price->data->value();
 
     $this->assertTrue($price_data['components'][1]['price']['amount'] == -50, t('Percentage product discount is added as a price compoennt to the line item.'));
+  }
+  /**
+   * Test discounted product price display.
+   */
+  public function testCommerceDiscountDiscountedProductPriceDisplay() {
+    // Create a product dicount.
+    $discount = $this->createDiscount('product_discount', 'fixed_amount', 300, 1);
+    $formatted_discounted_price = '$7.00';
+
+    // Log as a normal user.
+    $this->drupalLogin($this->store_customer);
+
+    $nid = $this->product_node->nid;
+    // View a product node.
+    $this->drupalGet("node/$nid");
+    $product_price = $this->xpath('//div[contains(@class, "field-name-commerce-price")]/div[contains(@class, "field-item")]');
+    $this->assertTrue(trim((string)$product_price[0]->div) == $formatted_discounted_price, t('Discounted product price is shown on product page.'));
+
+    // Add a product to the cart.
+    $this->drupalPost('node/' . $this->product_node->nid, array(), t('Add to cart'));
+
+    // View the cart.
+    $this->drupalGet('cart');
+    $product_price = $this->xpath('//td[contains(@class, "views-field-commerce-unit-price")]');
+    $this->assertTrue(trim((string)$product_price[0]->{0}) == $formatted_discounted_price, t('Discounted product price is shown on the cart.'));
   }
 }
