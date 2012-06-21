@@ -193,7 +193,7 @@ class CommerceDiscountTest extends CommerceDiscountTestBase {
     $this->drupalPost(NULL, $values, t('Save commerce discount'));
 
     // Load the discount and wrap it.
-    $discount = commerce_discount_load(1);
+    $discount = entity_load_single('commerce_discount', 1);
     $wrapper = entity_metadata_wrapper('commerce_discount', $discount);
 
     // Check the stored discount.
@@ -244,7 +244,7 @@ class CommerceDiscountTest extends CommerceDiscountTestBase {
     $this->drupalPost(NULL, array('import' => $exported_discount), t('Import'));
 
     // Export the discount to make sure it's identical to the import string.
-    $discount = commerce_discount_load(1);
+    $discount = entity_load_single('commerce_discount', 1);
     $export = entity_export('commerce_discount', $discount);
     $this->assertTrue($exported_discount == $export, t('Exported discount is identical to its origin.'));
   }
@@ -320,6 +320,7 @@ class CommerceDiscountTest extends CommerceDiscountTestBase {
 
     $this->assertTrue($price_data['components'][1]['price']['amount'] == -50, t('Percentage product discount is added as a price compoennt to the line item.'));
   }
+
   /**
    * Test discounted product price display.
    */
