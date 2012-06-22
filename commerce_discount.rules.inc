@@ -85,15 +85,30 @@ function commerce_discount_fixed_amount(EntityDrupalWrapper $wrapper, $discount_
         }
       }
 
-      $price_component = $discount_wrapper->commerce_discount_offer->commerce_fixed_amount->value();
-      $price_component['data']['discount_name'] = $discount_wrapper->getIdentifier();
+      $unit_price = commerce_price_wrapper_value($wrapper, 'commerce_unit_price', TRUE);
+      $current_amount = $unit_price['amount'];
+      $discount_price = $discount_wrapper->commerce_discount_offer->commerce_fixed_amount->value();
+      $discount_amount = $discount_price['amount'];
 
-      // Make the discount component amount negative.
-      $price_component['amount'] = $price_component['amount'] * -1;
+      // Calculate the updated amount and create a price array representing the
+      // difference between it and the current amount.
+      $updated_amount = commerce_round(COMMERCE_ROUND_HALF_UP, $current_amount - $discount_amount);
 
-      // Add the discount as a new component to the line item's unit price.
-      $data = commerce_price_component_add($wrapper->commerce_unit_price->value(), 'commerce_discount', $price_component, FALSE, TRUE);
-      $wrapper->commerce_unit_price->data->set($data);
+      $difference = array(
+        'amount' => $updated_amount - $current_amount,
+        'currency_code' => $unit_price['currency_code'],
+        'data' => array('discount_name' => $discount_wrapper->getIdentifier()),
+      );
+
+      // Set the amount of the unit price and add the difference as a component.
+      $wrapper->commerce_unit_price->amount = $updated_amount;
+
+      $wrapper->commerce_unit_price->data = commerce_price_component_add(
+        $wrapper->commerce_unit_price->value(),
+        'discount',
+        $difference,
+        TRUE
+      );
       break;
   }
 }
@@ -159,16 +174,29 @@ function commerce_discount_apply_percentage_discount($line_item_wrapper, $discou
     return;
   }
 
-  $price_component = array(
-    'amount' => $rate * $unit_price['amount'] * -1,
+  $unit_price = commerce_price_wrapper_value($line_item_wrapper, 'commerce_unit_price', TRUE);
+  $current_amount = $unit_price['amount'];
+  $discounted_amount = $current_amount - ($current_amount * $rate);
+
+  // Calculate the updated amount and create a price array representing the
+  // difference between it and the current amount.
+  $updated_amount = commerce_round(COMMERCE_ROUND_HALF_UP, $discounted_amount);
+
+  $difference = array(
+    'amount' => $updated_amount - $current_amount,
     'currency_code' => $unit_price['currency_code'],
     'data' => array('discount_name' => $discount_wrapper->getIdentifier()),
   );
 
-  // Add the discount as a new component to the line item's unit price.
-  $data = commerce_price_component_add($line_item_wrapper->commerce_unit_price->value(), 'commerce_discount', $price_component, FALSE, TRUE);
+  // Set the amount of the unit price and add the difference as a component.
+  $line_item_wrapper->commerce_unit_price->amount = $updated_amount;
 
-  $line_item_wrapper->commerce_unit_price->data->set($data);
+  $line_item_wrapper->commerce_unit_price->data = commerce_price_component_add(
+    $line_item_wrapper->commerce_unit_price->value(),
+    'discount',
+    $difference,
+    TRUE
+  );
 }
 
 /**
@@ -190,7 +218,7 @@ function commerce_discount_get_fixed_order_discount_line_item($order, $discount)
   $price_component = $discount_wrapper->commerce_discount_offer->commerce_fixed_amount->value();
   // Make sure the amount is negative.
   $price_component['amount'] = $price_component['amount'] * -1;
-  $data = commerce_price_component_add($price_component, 'commerce_discount', $price_component, TRUE, FALSE);
+  $data = commerce_price_component_add($price_component, 'discount', $price_component, TRUE, FALSE);
 
   $wrapper->commerce_unit_price->amount = $price_component['amount'];
   $wrapper->commerce_unit_price->data = $data;
