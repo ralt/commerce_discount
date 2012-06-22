@@ -12,7 +12,7 @@ function commerce_discount_date_rules_condition_info() {
   $items = array();
 
   $items['commerce_discount_date_condition'] = array(
-    'label' => t('Check discount promotion dates'),
+    'label' => t('Check discount dates'),
     'group' => t('Commerce Discount'),
     'parameter' => array(
       'commerce_discount' => array(

@@ -13,10 +13,10 @@ function commerce_discount_views_default_views() {
 
   $view = new view;
   $view->name = 'commerce_discount_overview';
-  $view->description = '';
+  $view->description = 'Display a list of discounts for store admin.';
   $view->tag = 'default';
   $view->base_table = 'commerce_discount';
-  $view->human_name = 'Commerce discount overview';
+  $view->human_name = 'Discounts';
   $view->core = 7;
   $view->api_version = '3.0';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
@@ -45,18 +45,21 @@ function commerce_discount_views_default_views() {
       'empty_column' => 0,
     ),
   );
+  $handler->display->display_options['style_options']['override'] = 1;
+  $handler->display->display_options['style_options']['sticky'] = 0;
+  $handler->display->display_options['style_options']['empty_table'] = 1;
   /* No results behavior: Global: Text area */
   $handler->display->display_options['empty']['area']['id'] = 'area';
   $handler->display->display_options['empty']['area']['table'] = 'views';
   $handler->display->display_options['empty']['area']['field'] = 'area';
   $handler->display->display_options['empty']['area']['empty'] = FALSE;
-  $handler->display->display_options['empty']['area']['content'] = 'No commerce discounts found.';
+  $handler->display->display_options['empty']['area']['content'] = 'No discounts found.';
   $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
   /* Field: Commerce Discount: Type */
   $handler->display->display_options['fields']['type']['id'] = 'type';
   $handler->display->display_options['fields']['type']['table'] = 'commerce_discount';
   $handler->display->display_options['fields']['type']['field'] = 'type';
-  $handler->display->display_options['fields']['type']['label'] = 'Promotion';
+  $handler->display->display_options['fields']['type']['label'] = 'Discount';
   $handler->display->display_options['fields']['type']['alter']['alter_text'] = 1;
   $handler->display->display_options['fields']['type']['alter']['text'] = '<span>[type]</span>';
   $handler->display->display_options['fields']['type']['alter']['make_link'] = 0;

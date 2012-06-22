@@ -49,21 +49,20 @@ class CommerceDiscountUIController extends EntityDefaultUIController {
    * Entity API's default form.
    */
   public function hook_menu() {
-    $plural_label = isset($this->entityInfo['plural label']) ? $this->entityInfo['plural label'] : $this->entityInfo['label'] . 's';
-
     $items = parent::hook_menu();
     $items[$this->path] = array(
-      'title' => $plural_label,
+      'title' => 'Discounts',
+      'description' => 'Manage discounts.',
       'page callback' => 'commerce_discount_overview_form',
-      'description' => 'Manage ' . $plural_label . '.',
       'access callback' => 'entity_access',
       'access arguments' => array('view', $this->entityType),
       'file' => 'includes/commerce_discount.admin.inc',
       'file path' => drupal_get_path('module', 'commerce_discount'),
     );
+    $items[$this->path . '/add']['title callback'] = 'commerce_discount_get_action_title';
+    $items[$this->path . '/import']['title callback'] = 'commerce_discount_get_action_title';
     return $items;
   }
-
 }
 
 /**
@@ -75,6 +74,18 @@ function commerce_discount_overview_form() {
   $form['view'] = array('#markup' => $view->preview());
   $form['#attached']['css'][] = drupal_get_path('module', 'commerce_discount') . '/css/commerce_discount.css';
   return $form;
+}
+
+/**
+ * Gets the page/menu title for local action operations.
+ */
+function commerce_discount_get_action_title($op, $entity_type) {
+  switch ($op) {
+    case 'add':
+      return t('Add discount');
+    case 'import':
+      return t('Import discount');
+  }
 }
 
 /**
@@ -98,7 +109,7 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
 
   // Show a list of commerce discounts.
   $form['commerce_discount_type'] = array(
-    '#title' => t('Choose promotion type'),
+    '#title' => t('Choose discount type'),
     '#type' => 'radios',
     '#options' => $options,
     '#required' => TRUE,
@@ -143,7 +154,7 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
   field_attach_form('commerce_discount', $commerce_discount, $form['commerce_discount_fields'], $form_state);
 
   $form['enabled'] = array(
-    '#title' => t('Promotion status'),
+    '#title' => t('Discount status'),
     '#type' => 'radios',
     '#options' => array(
       TRUE => t('Enabled'),
@@ -156,14 +167,14 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Save commerce discount'),
+    '#value' => t('Save discount'),
     '#weight' => 40,
   );
 
   if (!$commerce_discount->hasStatus(ENTITY_IN_CODE) && $op != 'add') {
     $form['actions']['delete'] = array(
       '#type' => 'submit',
-      '#value' => t('Delete commerce discount'),
+      '#value' => t('Delete discount'),
       '#weight' => 45,
       '#limit_validation_errors' => array(),
       '#submit' => array('commerce_discount_form_submit_delete')
@@ -204,14 +215,14 @@ function commerce_discount_form_validate($form, &$form_state) {
 function commerce_discount_form_submit(&$form, &$form_state) {
   $commerce_discount = entity_ui_form_submit_build_entity($form, $form_state);
   $commerce_discount->save();
-  $form_state['redirect'] = 'admin/commerce/store/commerce-discounts';
+  $form_state['redirect'] = 'admin/commerce/store/discounts';
 }
 
 /**
  * Form API submit callback for the delete button.
  */
 function commerce_discount_form_submit_delete(&$form, &$form_state) {
-  $form_state['redirect'] = 'admin/commerce/store/commerce-discounts/manage/' . $form_state['commerce_discount']->name . '/delete';
+  $form_state['redirect'] = 'admin/commerce/store/discounts/manage/' . $form_state['commerce_discount']->name . '/delete';
 }
 
 

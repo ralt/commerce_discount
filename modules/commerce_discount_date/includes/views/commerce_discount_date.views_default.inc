@@ -37,7 +37,7 @@ function commerce_discount_date_views_default_views_alter(&$views) {
 function _commerce_discount_date_views_get_view_delta() {
   $handler = new stdClass();
 
-  /* Field: Commerce Discount: Promotion dates */
+  /* Field: Commerce Discount: Discount dates */
   $handler->display->display_options['fields']['commerce_discount_date']['id'] = 'commerce_discount_date';
   $handler->display->display_options['fields']['commerce_discount_date']['table'] = 'field_data_commerce_discount_date';
   $handler->display->display_options['fields']['commerce_discount_date']['field'] = 'commerce_discount_date';
@@ -68,7 +68,7 @@ function _commerce_discount_date_views_get_view_delta() {
     'multiple_to' => '',
   );
   $handler->display->display_options['fields']['commerce_discount_date']['field_api_classes'] = 0;
-  /* Field: Commerce Discount: Promotion dates */
+  /* Field: Commerce Discount: Discount dates */
   $handler->display->display_options['fields']['commerce_discount_date_1']['id'] = 'commerce_discount_date_1';
   $handler->display->display_options['fields']['commerce_discount_date_1']['table'] = 'field_data_commerce_discount_date';
   $handler->display->display_options['fields']['commerce_discount_date_1']['field'] = 'commerce_discount_date';
