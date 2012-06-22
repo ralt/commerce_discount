@@ -3,6 +3,7 @@ description = Provides common functionality and a UI for managing discounts.
 core = 7.x
 package = Commerce
 
+dependencies[] = number
 dependencies[] = commerce_price
 dependencies[] = commerce_line_item
 dependencies[] = entity
