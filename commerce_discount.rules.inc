@@ -62,7 +62,8 @@ function commerce_discount_fixed_amount(EntityDrupalWrapper $wrapper, $discount_
       // Set reference to the discount.
       // TODO: It doesn't work with the wrapper.
       $order = $wrapper->value();
-      $order->commerce_discount[LANGUAGE_NONE][0]['target_id'] = $discount_wrapper->discount_id->value();
+      $delta = $wrapper->commerce_discounts->count();
+      $order->commerce_discounts[LANGUAGE_NONE][$delta]['target_id'] = $discount_wrapper->discount_id->value();
 
       if (!$line_item = commerce_discount_get_fixed_order_discount_line_item($order, $discount_wrapper->value())) {
         return;
