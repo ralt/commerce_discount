@@ -142,9 +142,9 @@ class CommerceDiscountTest extends CommerceDiscountTestBase {
     $this->assertResponse(200, t('The store admin has access to discounts administration.'));
 
     // Check the message of no discounts available.
-    $this->assertText(t('No commerce discounts found.'), t('\'No commerce discounts found.\' message is displayed'));
+    $this->assertText(t('No discounts found.'), t('\'No discounts found.\' message is displayed'));
     // Check the add customer profile link.
-    $this->assertRaw(l('Add commerce discount', 'admin/commerce/store/discounts/add'), t('\'Add commerce discount\' link is present in the page'));
+    $this->assertRaw(l('Add discount', 'admin/commerce/store/discounts/add'), t('\'Add discount\' link is present in the page'));
   }
 
   /**
@@ -173,10 +173,10 @@ class CommerceDiscountTest extends CommerceDiscountTestBase {
     $this->assertFieldByName('commerce_discount_fields[commerce_discount_offer][und][form][type]', NULL, t('Offer type field is present'));
     $this->assertFieldByName('commerce_discount_fields[commerce_discount_offer][und][form][commerce_fixed_amount][und][0][amount]', NULL, t('Amount field is present'));
     $this->assertFieldByName('enabled', NULL, t('Status field is present'));
-    $this->assertFieldById('edit-submit', t('Save commerce discount'), t('Save discount button is present'));
+    $this->assertFieldById('edit-submit', t('Save discount'), t('Save discount button is present'));
 
     // Try to save the product and check validation messages.
-    $this->drupalPost(NULL, array(), t('Save commerce discount'));
+    $this->drupalPost(NULL, array(), t('Save discount'));
 
     $this->assertText(t('Admin title field is required.'), t('Validation message for missing label.'));
     $this->assertText(t('Machine-readable name field is required.'), t('Validation message for missing machine-name.'));
@@ -190,7 +190,7 @@ class CommerceDiscountTest extends CommerceDiscountTestBase {
       'name' => 'order_discount_fixed',
       'commerce_discount_fields[commerce_discount_offer][und][form][commerce_fixed_amount][und][0][amount]' => 12.77,
     );
-    $this->drupalPost(NULL, $values, t('Save commerce discount'));
+    $this->drupalPost(NULL, $values, t('Save discount'));
 
     // Load the discount and wrap it.
     $discount = entity_load_single('commerce_discount', 1);
@@ -198,7 +198,7 @@ class CommerceDiscountTest extends CommerceDiscountTestBase {
 
     // Check the stored discount.
     $this->assertTrue($discount->label == $values['label'], t('Label stored correctly.'));
-    $this->assertTrue($discount->name == $values['name'], t('Name stored correctly.'));
+    $this->assertTrue($discount->name == 'discount_' . $values['name'], t('Name stored correctly.'));
     $this->assertTrue($discount->enabled == 1, t('Enabled stored correctly.'));
 
     $this->assertTrue($wrapper->commerce_discount_offer->type->value() == 'fixed_amount', t('Offer type stored correctly.'));
