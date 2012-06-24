@@ -50,8 +50,8 @@ function commerce_discount_fixed_amount(EntityDrupalWrapper $wrapper, $discount_
       }
 
       // Check whether the given discount is already applied on the order.
-      if ($wrapper->commerce_discount->value()) {
-        foreach ($wrapper->commerce_discount->value() as $discount) {
+      if ($wrapper->commerce_discounts->value()) {
+        foreach ($wrapper->commerce_discounts->value() as $discount) {
           if ($discount->name == $discount_name) {
             // Discount already applied.
             return;

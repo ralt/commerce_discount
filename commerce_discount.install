@@ -163,7 +163,7 @@ function commerce_discount_install() {
         'target_bundles' => array(),
       ),
     ),
-    'field_name' => 'commerce_discount',
+    'field_name' => 'commerce_discounts',
     'type' => 'entityreference',
     'locked' => TRUE,
     'cardinality' => FIELD_CARDINALITY_UNLIMITED,
@@ -171,7 +171,7 @@ function commerce_discount_install() {
   field_create_field($field);
 
   $instance = array(
-    'field_name' => 'commerce_discount',
+    'field_name' => 'commerce_discounts',
     'entity_type' => 'commerce_order',
     'bundle' => 'commerce_order',
     'label' => t('Discount reference'),
@@ -196,5 +196,5 @@ function commerce_discount_uninstall() {
 
   field_delete_field('commerce_fixed_amount');
   field_delete_field('commerce_percentage');
-  field_delete_field('commerce_discount');
+  field_delete_field('commerce_discounts');
 }
