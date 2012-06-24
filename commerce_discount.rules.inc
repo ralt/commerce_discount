@@ -212,7 +212,13 @@ function commerce_discount_apply_percentage_discount($line_item_wrapper, $discou
  *   An unsaved line item entity.
  */
 function commerce_discount_get_fixed_order_discount_line_item($order, $discount) {
-  $line_item = _commerce_discount_get_line_item($order, $discount);
+  // Create a new line item.
+  $line_item = entity_create('commerce_line_item', array(
+    'type' => 'commerce_discount',
+    'order_id' => $order->order_id,
+    'quantity' => 1,
+  ));
+
   $wrapper = entity_metadata_wrapper('commerce_line_item', $line_item);
   $discount_wrapper = entity_metadata_wrapper('commerce_discount', $discount);
 

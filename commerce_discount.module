@@ -530,31 +530,3 @@ function commerce_discount_line_item_title() {
   return t('Fixed amount discount');
 }
 
-/**
- * Helper function; Get a new or existing line item form order.
- */
-function _commerce_discount_get_line_item($order, $discount) {
-  // Iterate over order to see if we already have discount applied.
-  $order_wrapper = entity_metadata_wrapper('commerce_order', $order);
-  foreach ($order_wrapper->commerce_line_items as $line_item_wrapper) {
-    if ($line_item_wrapper->getBundle() != 'commerce_discount') {
-      continue;
-    }
-    if ($discount->discount_id == $line_item_wrapper->commerce_discount->getIdentifier()) {
-      // Change the existing line item.
-      $line_item = $line_item_wrapper->value();
-      break;
-    }
-  }
-
-  if (empty($line_item)) {
-    // Create the new line item.
-    $line_item = entity_create('commerce_line_item', array(
-      'type' => 'commerce_discount',
-      'order_id' => $order->order_id,
-      'quantity' => 1,
-    ));
-  }
-  return $line_item;
-}
-
