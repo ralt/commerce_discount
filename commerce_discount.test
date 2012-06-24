@@ -71,11 +71,13 @@ class CommerceDiscountTestBase extends CommerceBaseTestCase {
    *   The discount offer type; Either 'fixed_amount' or 'percentage'.
    * @param $amount
    *   The discount offer amount.
+   * @param $name
+   *   Discount name - Optional.
    *
    * @return
    *   The newly created commerce_discount entity.
    */
-  protected function createDiscount($discount_type, $offer_type, $amount) {
+  protected function createDiscount($discount_type, $offer_type, $amount, $name = '') {
     // Create the discount offer.
     $commerce_discount_offer = entity_create('commerce_discount_offer', array('type' => $offer_type));
     $wrapper = entity_metadata_wrapper('commerce_discount_offer', $commerce_discount_offer);
@@ -91,11 +93,13 @@ class CommerceDiscountTestBase extends CommerceBaseTestCase {
     }
     $wrapper->save();
 
+    // Provide default name.
+    $name = $name ? $name : $discount_type . '_' . $offer_type;
 
     // Create the discount.
     $values = array(
-      'name' => $discount_type . '_' . $offer_type,
-      'label' => $discount_type . '_' . $offer_type,
+      'name' => $name,
+      'label' => $name,
       'type' => $discount_type,
       'enabled' => TRUE,
       'status' => TRUE,
@@ -326,7 +330,7 @@ class CommerceDiscountTest extends CommerceDiscountTestBase {
    */
   public function testCommerceDiscountDiscountedProductPriceDisplay() {
     // Create a product dicount.
-    $discount = $this->createDiscount('product_discount', 'fixed_amount', 300, 1);
+    $discount = $this->createDiscount('product_discount', 'fixed_amount', 300);
     $formatted_discounted_price = '$7.00';
 
     // Log as a normal user.
@@ -345,5 +349,25 @@ class CommerceDiscountTest extends CommerceDiscountTestBase {
     $this->drupalGet('cart');
     $product_price = $this->xpath('//td[contains(@class, "views-field-commerce-unit-price")]');
     $this->assertTrue(trim((string)$product_price[0]->{0}) == $formatted_discounted_price, t('Discounted product price is shown on the cart.'));
+  }
+
+  /**
+   * Test multiple fixed order discounts.
+   */
+  public function testCommerceDiscountMultipleFixedOrderDiscounts() {
+    // Create two discounts.
+    $discount = $this->createDiscount('order_discount', 'fixed_amount', 300, 'of1');
+    $discount = $this->createDiscount('order_discount', 'fixed_amount', 200, 'of2');
+
+    // Create an order.
+    $order = $this->createDummyOrder($this->store_customer->uid, array($this->product->product_id => 1), 'complete');
+
+    $wrapper = entity_metadata_wrapper('commerce_order', $order);
+
+    $this->assertTrue($wrapper->commerce_discounts->count() == 2, t('2 discounts are listed as applied on the order.'));
+    $this->assertTrue($wrapper->commerce_order_total->amount->value() == 500, t('Two fixed order discounts are applied on the total price.'));
+    $this->assertTrue($wrapper->commerce_line_items->count() == 3, t('An order with one product and two fixed order discounts has three line items.'));
+    $wrapper->save();
+    $this->assertTrue($wrapper->commerce_line_items->count() == 3, t('After updating the order it still has three line items.'));
   }
 }
