@@ -10,9 +10,10 @@
  */
 class CommerceDiscountTestBase extends CommerceBaseTestCase {
   /**
-   * Dummy commerce_product.
+   * Dummy commerce_product and related product node.
    */
   protected $product;
+  protected $product_node;
 
   /**
    * Overrides CommerceBaseTestCase::permissionBuilder().
