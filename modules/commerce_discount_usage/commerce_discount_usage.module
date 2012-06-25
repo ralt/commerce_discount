@@ -123,7 +123,7 @@ function commerce_discount_usage_commerce_cart_product_add($order, $product, $qu
   $price_data = $wrapper->commerce_unit_price->data->value();
   // Search for discount components in the line item price.
   foreach ($price_data['components'] as $component) {
-    if ($component['name'] != 'commerce_discount') {
+    if ($component['name'] != 'discount') {
       continue;
     }
 
@@ -143,7 +143,7 @@ function commerce_discount_usage_commerce_cart_product_remove($order, $product, 
   $price_data = $wrapper->commerce_unit_price->data->value();
   // Search for discount components in the line item price.
   foreach ($price_data['components'] as $component) {
-    if ($component['name'] != 'commerce_discount') {
+    if ($component['name'] != 'discount') {
       continue;
     }
 
