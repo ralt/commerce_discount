@@ -182,7 +182,7 @@ class CommerceDiscountDateTest extends CommerceDiscountTestBase {
       'date_type' => 'datestamp',
     );
 
-    dpm($wrapper->commerce_discount_date->set($date_data));
+    $wrapper->commerce_discount_date->set($date_data);
     $wrapper->save();
 
     return $wrapper->value();
