@@ -16,7 +16,6 @@ function commerce_discount_usage_install() {
     'entity_types' => array('commerce_discount'),
     'field_name' => 'commerce_discount_uses',
     'type' => 'number_integer',
-    'locked' => TRUE,
   );
   field_create_field($field);
 
@@ -24,7 +23,6 @@ function commerce_discount_usage_install() {
     'entity_types' => array('commerce_discount'),
     'field_name' => 'commerce_discount_max_uses',
     'type' => 'number_integer',
-    'locked' => TRUE,
   );
   field_create_field($field);
 }

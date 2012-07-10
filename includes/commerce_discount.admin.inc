@@ -112,7 +112,7 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
     '#title' => t('Choose discount type'),
     '#type' => 'radios',
     '#options' => $options,
-    '#required' => TRUE,
+    '#required' => FALSE,
     '#default_value' => $commerce_discount->type,
     '#ajax' => array(
        'callback' => 'commerce_discount_fields_ajax_callback',
@@ -156,6 +156,22 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
   $form['commerce_discount_fields']['commerce_discount_offer'][LANGUAGE_NONE]['#title'] = NULL;
   $form['commerce_discount_fields']['commerce_discount_offer'][LANGUAGE_NONE]['#type'] = 'container';
 
+  // Add a class to custom fields for easier styling.
+  // Ignore the offer reference field and any date fields. Date fields are
+  // ignored because their markup makes them hard to style generically.
+  foreach (element_get_visible_children($form['commerce_discount_fields']) as $field_name) {
+    $field = field_info_field($field_name);
+    if ($field_name == 'commerce_discount_offer' || in_array($field['type'], array('date', 'datestamp', 'datetime'))) {
+      continue;
+    }
+
+    $field_form = &$form['commerce_discount_fields'][$field_name];
+    if (!isset($field_form['#attributes']['class'])) {
+      $field_form['#attributes']['class'] = array();
+    }
+    $field_form['#attributes']['class'][] = 'commerce-discount-box';
+  }
+
   $form['enabled'] = array(
     '#title' => t('Discount status'),
     '#type' => 'radios',
@@ -188,7 +204,7 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
   // Add assets.
   $form['#attached']['js'][] = drupal_get_path('module', 'commerce_discount') . '/js/commerce_discount.js';
   $form['#attached']['css'][] = drupal_get_path('module', 'commerce_discount') . '/css/commerce_discount.css';
-  $form['#attributes']['class'][] = 'commerce_discount_form';
+  $form['#attributes']['class'][] = 'commerce-discount-form';
 
   return $form;
 }

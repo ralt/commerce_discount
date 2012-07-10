@@ -17,21 +17,24 @@
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.36, rgb(252,253,252)), color-stop(0.68, rgb(240,240,240)));
 }
 
-.box {
+.commerce-discount-box {
   background: @gray;
   padding: 15px;
+  margin-bottom: 5px;
+  border: 1px solid white;
+  outline: 0;
 }
 
-
-.btn {
+.commerce-discount-button {
   padding: 15px;
   margin-right: 20px; // LTR
   background-color: @grayLight;
   color: black;
   border-radius: 5px;
+  cursor: pointer;
 }
 
-.btn-selected {
+.commerce-discount-button-selected {
   background-color: @blue;
   color: white;
 }
@@ -44,8 +47,8 @@
   }
 }
 
-.radio-buttons {
-  .box;
+.commerce-discount-radio-buttons {
+  .commerce-discount-box;
   padding: 25px 15px 25px 15px;
   margin-top: 10px;
 
@@ -57,25 +60,22 @@
     }
 
     label {
-      .btn;
+      .commerce-discount-button;
     }
 
     &.selected {
-
       label {
-        .btn-selected;
+        .commerce-discount-button-selected;
       }
     }
   }
 }
 
 // Reset
-#commerce-discount-edit-order-discount-form,
-#commerce-discount-form {
-
+.commerce-discount-form {
   label {
     display: inline;
-    margin-right: 15px;
+    margin-right: 10px !important;
   }
 
   .form-item, .form-item .form-item {
@@ -93,7 +93,7 @@
   padding: 0;
 
   #edit-commerce-discount-type {
-    .radio-buttons;
+    .commerce-discount-radio-buttons;
   }
 }
 
@@ -106,7 +106,7 @@
 }
 
 .form-item-label.form-item {
-  .box;
+  .commerce-discount-box;
 
   .description {
     margin-left: 105px; // LTR
@@ -125,12 +125,12 @@
   }
 
   .form-type-radios > div {
-    .radio-buttons;
+    .commerce-discount-radio-buttons;
   }
 
   .field-type-commerce-price,
   .field-type-number-decimal {
-    .box;
+    .commerce-discount-box;
 
     .form-item {
       margin: 5px 0 0 0;
@@ -197,17 +197,22 @@
   clear: both;
 }
 
+.fieldset-wrapper {
+  margin: 0 !important;
+}
+
 fieldset.form-wrapper {
-  border: none;
+  margin: 0 !important;
+  padding: 0;
 
   .fieldset-legend {
-    text-transform: none;
-    padding-left: 0;
+    display: none;
   }
 }
 
 .field-name-commerce-discount-date .fieldset-wrapper {
-  .box;
+  .commerce-discount-box;
+  margin-bottom:0;
 
   .form-type-checkbox {
     display: none;
@@ -259,26 +264,18 @@ fieldset.form-wrapper {
   }
 }
 
-.field-name-commerce-discount-max-uses {
-  .box;
-
+.commerce-discount-usage {
   & > div {
     float: left; // LTR
-    margin-left: 30px; // LTR
+    margin-left: 15px; // LTR
 
     &:first-child {
       margin-left: 0;
     }
-
-    input[disabled] {
-     background: #eeeeee;
-    }
   }
-
 }
 
 .view-commerce-discount-overview {
-
   .views-table {
     border: none;
 
@@ -290,12 +287,12 @@ fieldset.form-wrapper {
       text-transform: none;
     }
 
-    th.views-field-enable-disable {
-
-    }
-
     th.views-field-operations-dropbutton {
       width: 70px;
+    }
+
+    td ul {
+      margin: 0;
     }
 
     td.views-field-type span {
@@ -313,7 +310,7 @@ fieldset.form-wrapper {
     }
 
     td.views-field-enable-disable .item-list ul {
-      width: 140px;
+      width: 160px;
       border: 1px solid @grayDark;
       border-radius: 5px;
       height: 30px;

@@ -28,7 +28,7 @@ class CommerceDiscountOfferInlineEntityFormController extends EntityInlineEntity
       '#title' => t('Choose offer type'),
       '#type' => 'radios',
       '#options' => $options,
-      '#required' => TRUE,
+      '#required' => FALSE,
       '#default_value' => $offer->type,
       '#ajax' => array(
          'callback' => 'inline_entity_form_get_element',
