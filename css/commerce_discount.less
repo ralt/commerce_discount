@@ -1,9 +1,9 @@
 @gray: #f0f0f0;
 @gray2: #cccccc;
 @gray3: #e7e8e3;
-@gray4: #4d4e49;
 @grayLight: #f6f6f6;
 @grayDark: #6d6d6d;
+@red: #c3231a;
 @blue: #0089c9;
 @green: #7cae20;
 @azure: #d2eeff;
@@ -119,14 +119,6 @@
   padding: 0;
   margin: 0;
 
-  span.fieldset-legend {
-    display: none;
-  }
-
-  .fieldset-wrapper {
-    padding: 0;
-  }
-
   .form-item {
     margin-bottom: 2px;
     padding: 0;
@@ -164,7 +156,7 @@
 
     label {
       padding: 10px;
-      border: 2px solid @grayDark;
+      border: 1px solid @grayDark;
       font-weight: bold;
 
       &[for=edit-enabled-1] {
@@ -192,7 +184,7 @@
       }
 
       label[for=edit-enabled-0] {
-        background-color: @gray4;
+        background-color: @red;
         color: white;
       }
 
@@ -322,7 +314,7 @@ fieldset.form-wrapper {
 
     td.views-field-enable-disable .item-list ul {
       width: 140px;
-      border: 2px solid @grayDark;
+      border: 1px solid @grayDark;
       border-radius: 5px;
       height: 30px;
 
@@ -343,7 +335,7 @@ fieldset.form-wrapper {
         }
 
         &.disabled {
-          background-color: @gray4;
+          background-color: @red;
         }
 
          a {

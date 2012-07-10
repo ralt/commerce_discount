@@ -152,6 +152,9 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
     '#parents' => array('commerce_discount_fields'),
   );
   field_attach_form('commerce_discount', $commerce_discount, $form['commerce_discount_fields'], $form_state);
+  // Remove the title and surrounding fieldset from the offer reference field.
+  $form['commerce_discount_fields']['commerce_discount_offer'][LANGUAGE_NONE]['#title'] = NULL;
+  $form['commerce_discount_fields']['commerce_discount_offer'][LANGUAGE_NONE]['#type'] = 'container';
 
   $form['enabled'] = array(
     '#title' => t('Discount status'),
@@ -160,7 +163,7 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
       TRUE => t('Enabled'),
       FALSE => t('Disabled'),
     ),
-    '#required' => TRUE,
+    '#required' => FALSE,
     '#default_value' => $commerce_discount->enabled,
   );
 
@@ -169,6 +172,7 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
     '#type' => 'submit',
     '#value' => t('Save discount'),
     '#weight' => 40,
+    '#ief_submit_all' => TRUE,
   );
 
   if (!$commerce_discount->hasStatus(ENTITY_IN_CODE) && $op != 'add') {
@@ -184,6 +188,7 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
   // Add assets.
   $form['#attached']['js'][] = drupal_get_path('module', 'commerce_discount') . '/js/commerce_discount.js';
   $form['#attached']['css'][] = drupal_get_path('module', 'commerce_discount') . '/css/commerce_discount.css';
+  $form['#attributes']['class'][] = 'commerce_discount_form';
 
   return $form;
 }
