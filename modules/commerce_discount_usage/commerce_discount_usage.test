@@ -93,7 +93,7 @@ class CommerceDiscountUsageTest extends CommerceDiscountTest {
    * Test percentage order discounts.
    */
   public function testCommerceDiscountUsagePercentageOrderDiscount() {
-    // Testing precentage discount.
+    // Testing percentage discount.
     // Create a percentage order discount of 5% limited to one use.
     $discount = $this->createDiscount('order_discount', 'percentage', 5, 1);
     // Create a completed order.

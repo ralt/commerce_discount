@@ -115,7 +115,7 @@ function commerce_discount_fixed_amount(EntityDrupalWrapper $wrapper, $discount_
 }
 
 /**
- * Rules action: Apply precentage discount.
+ * Rules action: Apply percentage discount.
  */
 function commerce_discount_percentage(EntityDrupalWrapper $wrapper, $discount_name) {
   $discount_wrapper = entity_metadata_wrapper('commerce_discount', $discount_name);

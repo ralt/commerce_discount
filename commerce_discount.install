@@ -149,7 +149,7 @@ function commerce_discount_install() {
     'field_name' => 'commerce_percentage',
     'entity_type' => 'commerce_discount_offer',
     'bundle' => 'percentage',
-    'label' => t('Precentage'),
+    'label' => t('Percentage'),
     'required' => TRUE,
   );
   field_create_instance($instance);
