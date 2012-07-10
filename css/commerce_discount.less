@@ -8,7 +8,7 @@
 @green: #7cae20;
 @azure: #d2eeff;
 
-@gradient {
+.gradient {
   background-image: linear-gradient(top, rgb(252,253,252) 36%, rgb(240,240,240) 68%);
   background-image: -o-linear-gradient(top, rgb(252,253,252) 36%, rgb(240,240,240) 68%);
   background-image: -moz-linear-gradient(top, rgb(252,253,252) 36%, rgb(240,240,240) 68%);
@@ -17,11 +17,11 @@
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.36, rgb(252,253,252)), color-stop(0.68, rgb(240,240,240)));
 }
 
-
 .box {
   background: @gray;
   padding: 15px;
 }
+
 
 .btn {
   padding: 15px;
@@ -355,8 +355,7 @@ fieldset.form-wrapper {
     td.views-field-operations-dropbutton .ctools-dropbutton {
       border: 1px solid @gray2;
       border-radius: 10px;
-
-      @gradient;
+      .gradient;
 
       .ctools-content {
         border-right: 1px solid @gray2;
