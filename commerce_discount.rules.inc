@@ -43,22 +43,6 @@ function commerce_discount_fixed_amount(EntityDrupalWrapper $wrapper, $discount_
   $discount_wrapper = entity_metadata_wrapper('commerce_discount', $discount_name);
   switch ($discount_wrapper->getBundle()) {
     case 'order_discount':
-      // Fixed amount that should be aplied on order.
-      if ($wrapper->type() != 'commerce_order') {
-        // Wrong entity was passed.
-        return;
-      }
-
-      // Check whether the given discount is already applied on the order.
-      if ($wrapper->commerce_discounts->value()) {
-        foreach ($wrapper->commerce_discounts->value() as $discount) {
-          if ($discount->name == $discount_name) {
-            // Discount already applied.
-            return;
-          }
-        }
-      }
-
       // Set reference to the discount.
       // TODO: It doesn't work with the wrapper.
       $order = $wrapper->value();
@@ -71,13 +55,15 @@ function commerce_discount_fixed_amount(EntityDrupalWrapper $wrapper, $discount_
 
       commerce_line_item_save($line_item);
       $wrapper->commerce_line_items[] = $line_item;
+
+      // Updating the commerce order calculate price; For some reason, without
+      // the following call to commerce_order_calculate_total() the discount
+      // components aren't re-added after they get deleted in
+      // commerce_discount_commerce_order_presave().
+      commerce_order_calculate_total($order);
       break;
 
     case 'product_discount':
-      if ($wrapper->type() != 'commerce_line_item') {
-        return;
-      }
-
       // Check whether this discount was already added as a price component.
       $components = $wrapper->commerce_unit_price->data->value();
       foreach ($components as $component) {
@@ -121,10 +107,6 @@ function commerce_discount_percentage(EntityDrupalWrapper $wrapper, $discount_na
   $discount_wrapper = entity_metadata_wrapper('commerce_discount', $discount_name);
   switch ($discount_wrapper->getBundle()) {
     case 'order_discount':
-      if ($wrapper->type() != 'commerce_order') {
-        return;
-      }
-
       if (!$wrapper->commerce_line_items->value()) {
         return;
       }
@@ -137,14 +119,15 @@ function commerce_discount_percentage(EntityDrupalWrapper $wrapper, $discount_na
       $is_new = !empty($line_item->is_new);
       commerce_line_item_save($line_item);
 
+      // Updating the commerce order calculate price; For some reason, without
+      // the following call to commerce_order_calculate_total() the discount
+      // components aren't re-added after they get deleted in
+      // commerce_discount_commerce_order_presave().
+      commerce_order_calculate_total($wrapper->value());
       break;
 
     case 'product_discount':
-      if ($wrapper->type() != 'commerce_line_item') {
-        return;
-      }
       commerce_discount_apply_percentage_discount($wrapper, $discount_wrapper);
-
       break;
   }
 }
@@ -226,7 +209,7 @@ function commerce_discount_get_fixed_order_discount_line_item($order, $discount)
   // Make sure the amount is negative.
   $price_component['amount'] = $price_component['amount'] * -1;
   $data = commerce_price_component_add($price_component, 'discount', $price_component, TRUE, FALSE);
-
+  $data['components'][0]['price']['data']['discount_name'] = $discount->name;
   $wrapper->commerce_unit_price->amount = $price_component['amount'];
   $wrapper->commerce_unit_price->data = $data;
 

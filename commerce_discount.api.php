@@ -24,7 +24,7 @@ function hook_commerce_discount_type_info() {
   $types = array();
   $types['order_discount'] = array(
     'label' => t('Order Discount'),
-    'event' => 'commerce_discount_calculate_order_discount',
+    'event' => 'commerce_order_presave',
     'entity type' => 'commerce_order',
   );
   $types['product_discount'] = array(
