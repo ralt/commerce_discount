@@ -131,7 +131,8 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
   // Machine-readable type name.
   $form['name'] = array(
     '#type' => 'machine_name',
-    '#default_value' => isset($commerce_discount->name) ? $commerce_discount->name : '',
+    // Strip the 'discount_' prefix from the beginning of the string
+    '#default_value' => isset($commerce_discount->name) ? substr($commerce_discount->name, 9) : '',
     '#disabled' => $commerce_discount->hasStatus(ENTITY_IN_CODE),
     '#machine_name' => array(
       'exists' => '_commerce_discount_name_exists',
