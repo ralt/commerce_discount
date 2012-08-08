@@ -18,21 +18,16 @@ $azure: #d2eeff;
 }
 
 @mixin box {
-  background: $gray;
-  padding: 15px;
+
+  padding: 0px;
 }
 
 @mixin btn {
-  padding: 15px;
+  clear: both;
   margin-right: 20px; // LTR
-  background-color: $grayLight;
+  margin-bottom: 5px;
   color: black;
   border-radius: 5px;
-}
-
-@mixin btn-selected {
-  background-color: $blue;
-  color: white;
 }
 
 .ajax-progress-throbber {
@@ -45,25 +40,28 @@ $azure: #d2eeff;
 
 @mixin radio-buttons {
   @include box;
-  padding: 25px 15px 25px 15px;
   margin-top: 10px;
 
   .form-item {
     float: left; // LTR
+    @include btn;
 
     input {
-      display: none;
+      display: inline;
+    }
+  }
+}
+
+@mixin fieldset-title {
+  fieldset.form-wrapper {
+    legend {
+      width: 100%;
     }
 
-    label {
-      @include btn;
-    }
-
-    &.selected {
-
-      label {
-        @include btn-selected;
-      }
+    .fieldset-legend {
+      border-bottom: 1px solid $gray2;
+      display: block;
+      width: 100%;
     }
   }
 }
@@ -73,15 +71,9 @@ $azure: #d2eeff;
 #commerce-discount-form {
 
   label {
-    display: inline;
     margin-right: 15px;
   }
-
-  .form-item, .form-item .form-item {
-    clear: none;
-  }
 }
-
 
 .form-item-label {
   clear: both;
@@ -97,6 +89,7 @@ $azure: #d2eeff;
 }
 
 .field-name-commerce-discount-date {
+  @include fieldset-title;
 
   .fieldset-wrapper {
     display: inline-block;
@@ -106,18 +99,17 @@ $azure: #d2eeff;
 
 .form-item-label.form-item {
   @include box;
-
-  .description {
-    margin-left: 105px; // LTR
-  }
-
 }
 
 .field-name-commerce-discount-offer {
+
   border: none;
   padding: 0;
   margin: 0;
 
+  .form-wrapper .form-wrapper > .form-item > label {
+    border-bottom: 1px solid $gray2;
+  }
   span.fieldset-legend {
     display: none;
   }

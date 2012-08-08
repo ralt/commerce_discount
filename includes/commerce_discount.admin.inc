@@ -107,6 +107,14 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
     $options[$type] = $info['label'];
   }
 
+  $form['label'] = array(
+    '#title' => t('Admin title'),
+    '#type' => 'textfield',
+    '#default_value' => $commerce_discount->label,
+    '#description' => t('Shown only on managment screens, not shown to customers.'),
+    '#required' => TRUE,
+  );
+
   // Show a list of commerce discounts.
   $form['commerce_discount_type'] = array(
     '#title' => t('Choose discount type'),
@@ -118,14 +126,6 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
        'callback' => 'commerce_discount_fields_ajax_callback',
        'wrapper' => 'commerce-discount-fields-wrapper',
     ),
-  );
-
-  $form['label'] = array(
-    '#title' => t('Admin title'),
-    '#type' => 'textfield',
-    '#default_value' => $commerce_discount->label,
-    '#description' => t('Shown only on managment screens, not shown to customers.'),
-    '#required' => TRUE,
   );
 
   // Machine-readable type name.
@@ -175,7 +175,7 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
 
   $form['enabled'] = array(
     '#title' => t('Discount status'),
-    '#type' => 'radios',
+    '#type' => 'select',
     '#options' => array(
       TRUE => t('Enabled'),
       FALSE => t('Disabled'),

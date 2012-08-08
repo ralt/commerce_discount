@@ -5,12 +5,7 @@
 
 #commerce-discount-edit-order-discount-form label,
 #commerce-discount-form label {
-  display: inline;
   margin-right: 15px; }
-#commerce-discount-edit-order-discount-form .form-item, #commerce-discount-edit-order-discount-form .form-item .form-item,
-#commerce-discount-form .form-item,
-#commerce-discount-form .form-item .form-item {
-  clear: none; }
 
 .form-item-label {
   clear: both; }
@@ -19,38 +14,37 @@
   margin-bottom: 2px;
   padding: 0; }
   .form-item-commerce-discount-type.form-item #edit-commerce-discount-type {
-    background: #f0f0f0;
-    padding: 15px;
-    padding: 25px 15px 25px 15px;
+    padding: 0px;
     margin-top: 10px; }
     .form-item-commerce-discount-type.form-item #edit-commerce-discount-type .form-item {
-      float: left; }
+      float: left;
+      clear: both;
+      margin-right: 20px;
+      margin-bottom: 5px;
+      color: black;
+      border-radius: 5px; }
       .form-item-commerce-discount-type.form-item #edit-commerce-discount-type .form-item input {
-        display: none; }
-      .form-item-commerce-discount-type.form-item #edit-commerce-discount-type .form-item label {
-        padding: 15px;
-        margin-right: 20px;
-        background-color: #f6f6f6;
-        color: black;
-        border-radius: 5px; }
-      .form-item-commerce-discount-type.form-item #edit-commerce-discount-type .form-item.selected label {
-        background-color: #0089c9;
-        color: white; }
+        display: inline; }
 
+.field-name-commerce-discount-date fieldset.form-wrapper legend {
+  width: 100%; }
+.field-name-commerce-discount-date fieldset.form-wrapper .fieldset-legend {
+  border-bottom: 1px solid #cccccc;
+  display: block;
+  width: 100%; }
 .field-name-commerce-discount-date .fieldset-wrapper {
   display: inline-block;
   width: 100%; }
 
 .form-item-label.form-item {
-  background: #f0f0f0;
-  padding: 15px; }
-  .form-item-label.form-item .description {
-    margin-left: 105px; }
+  padding: 0px; }
 
 .field-name-commerce-discount-offer {
   border: none;
   padding: 0;
   margin: 0; }
+  .field-name-commerce-discount-offer .form-wrapper .form-wrapper > .form-item > label {
+    border-bottom: 1px solid #cccccc; }
   .field-name-commerce-discount-offer span.fieldset-legend {
     display: none; }
   .field-name-commerce-discount-offer .fieldset-wrapper {
@@ -59,27 +53,20 @@
     margin-bottom: 2px;
     padding: 0; }
   .field-name-commerce-discount-offer .form-type-radios > div {
-    background: #f0f0f0;
-    padding: 15px;
-    padding: 25px 15px 25px 15px;
+    padding: 0px;
     margin-top: 10px; }
     .field-name-commerce-discount-offer .form-type-radios > div .form-item {
-      float: left; }
+      float: left;
+      clear: both;
+      margin-right: 20px;
+      margin-bottom: 5px;
+      color: black;
+      border-radius: 5px; }
       .field-name-commerce-discount-offer .form-type-radios > div .form-item input {
-        display: none; }
-      .field-name-commerce-discount-offer .form-type-radios > div .form-item label {
-        padding: 15px;
-        margin-right: 20px;
-        background-color: #f6f6f6;
-        color: black;
-        border-radius: 5px; }
-      .field-name-commerce-discount-offer .form-type-radios > div .form-item.selected label {
-        background-color: #0089c9;
-        color: white; }
+        display: inline; }
   .field-name-commerce-discount-offer .field-type-commerce-price,
   .field-name-commerce-discount-offer .field-type-number-decimal {
-    background: #f0f0f0;
-    padding: 15px; }
+    padding: 0px; }
     .field-name-commerce-discount-offer .field-type-commerce-price .form-item,
     .field-name-commerce-discount-offer .field-type-number-decimal .form-item {
       margin: 5px 0 0 0; }
@@ -125,8 +112,7 @@ fieldset.form-wrapper {
     padding-left: 0; }
 
 .field-name-commerce-discount-date .fieldset-wrapper {
-  background: #f0f0f0;
-  padding: 15px; }
+  padding: 0px; }
   .field-name-commerce-discount-date .fieldset-wrapper .form-type-checkbox {
     display: none; }
   .field-name-commerce-discount-date .fieldset-wrapper .container-inline-date {
@@ -155,8 +141,7 @@ fieldset.form-wrapper {
       margin-left: 20px; }
 
 .field-name-commerce-discount-max-uses {
-  background: #f0f0f0;
-  padding: 15px; }
+  padding: 0px; }
   .field-name-commerce-discount-max-uses > div {
     float: left;
     margin-left: 30px; }
