@@ -19,6 +19,9 @@ function commerce_discount_date_views_default_views_alter(&$views) {
   // In order to insert the date fields in the middle of the fields array,
   // rebuild it while inserting the date fields after the 'rendered_entity'
   // field.
+  if (!is_array($handler->display->display_options['fields'])) {
+    return;
+  }
   foreach ($handler->display->display_options['fields'] as $field_id => $field) {
     $fields[$field_id] = $field;
 
