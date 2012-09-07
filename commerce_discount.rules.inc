@@ -35,6 +35,22 @@ function commerce_discount_rules_action_info() {
   return $items;
 }
 
+/**
+ * Implements hook_rules_event_info().
+ */
+function commerce_discount_rules_event_info() {
+  $items = array(
+    'commerce_discount_order' => array(
+      'label' => t('Apply a discount to a given order'),
+      'group' => t('Commerce - discount'),
+      'variables' => entity_rules_events_variables('commerce_order', t('Order', array(), array('context' => 'a drupal commerce order'))),
+      'access callback' => 'commerce_order_rules_access',
+    ),
+  );
+
+  return $items;
+}
+
 
 /**
  * Rules action: Apply fixed amount discount.
@@ -114,10 +130,9 @@ function commerce_discount_percentage(EntityDrupalWrapper $wrapper, $discount_na
       foreach ($wrapper->commerce_line_items->value() as $line_item) {
         $line_item_wrapper = entity_metadata_wrapper('commerce_line_item', $line_item);
         commerce_discount_apply_percentage_discount($line_item_wrapper, $discount_wrapper);
+        $is_new = !empty($line_item->is_new);
+        commerce_line_item_save($line_item);
       }
-
-      $is_new = !empty($line_item->is_new);
-      commerce_line_item_save($line_item);
 
       // Updating the commerce order calculate price; For some reason, without
       // the following call to commerce_order_calculate_total() the discount

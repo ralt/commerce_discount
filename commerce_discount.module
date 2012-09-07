@@ -43,6 +43,10 @@ function commerce_discount_commerce_order_presave($order) {
       $wrapper_line_item->save();
     }
   }
+
+  // Invoke all the rules that apply discounts to a given order after doing the
+  // cleanup.
+  rules_invoke_event('commerce_discount_order', $order);
 }
 
 /**
@@ -66,7 +70,7 @@ function commerce_discount_remove_discount_components($price_wrapper) {
       $component_removed = TRUE;
     }
   }
-  // If components were removed, re-set the price data.
+  // Don't alter the price components if no components were removed.
   if (!$component_removed) {
     return;
   }
@@ -185,7 +189,7 @@ function commerce_discount_permission() {
 function commerce_discount_views_api($module, $api) {
   if ($module == 'views') {
     return array(
-      'version' => 2,
+      'version' => 3,
       'path' => drupal_get_path('module','commerce_discount') . '/includes/views',
     );
   }
@@ -306,7 +310,6 @@ function commerce_discount_set_enabled($discount_id, $enabled, $type = 'ajax') {
     return;
   }
 
-
   $entity = entity_load_single('commerce_discount', $discount_id);
   $entity->enabled = $enabled;
   $entity->save();
@@ -367,7 +370,7 @@ function commerce_discount_commerce_discount_type_info() {
   $types = array();
   $types['order_discount'] = array(
     'label' => t('Order Discount'),
-    'event' => 'commerce_order_presave',
+    'event' => 'commerce_discount_order',
     'entity type' => 'commerce_order',
   );
   $types['product_discount'] = array(
