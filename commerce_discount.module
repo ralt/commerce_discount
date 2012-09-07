@@ -50,6 +50,14 @@ function commerce_discount_commerce_order_presave($order) {
 }
 
 /**
+ * Implements hook_commerce_cart_order_refresh().
+ */
+function commerce_discount_commerce_cart_order_refresh($order_wrapper) {
+  $order = $order_wrapper->value();
+  rules_invoke_event('commerce_discount_order', $order);
+}
+
+/**
  * Remove discount components from a given price and recalculate the total.
  *
  * @param $price_wrapper
