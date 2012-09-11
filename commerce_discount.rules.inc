@@ -248,35 +248,35 @@ function commerce_discount_get_percentage_order_discount_line_item($order, $disc
   $discount_line_item_wrapper->commerce_unit_price->data = commerce_price_component_add($base_price, 'base_price', $base_price, TRUE);
 
   // Loop the line items of the order and calculate the total discount.
-  foreach ($order_wrapper->commerce_line_items->value() as $line_item) {
-    $line_item_wrapper = entity_metadata_wrapper('commerce_line_item', $line_item);
-    $line_item_unit_price = commerce_price_wrapper_value($line_item_wrapper, 'commerce_unit_price', TRUE);
-    $line_item_current_amount = $line_item_unit_price['amount'];
+  foreach ($order_wrapper->commerce_line_items as $line_item_wrapper) {
+    if (in_array($line_item_wrapper->type->value(), commerce_product_line_item_types())) {
+      $line_item_unit_price = commerce_price_wrapper_value($line_item_wrapper, 'commerce_unit_price', TRUE);
+      $line_item_current_amount = $line_item_unit_price['amount'];
 
-    $discount_line_item_price = commerce_price_wrapper_value($discount_line_item_wrapper, 'commerce_unit_price', TRUE);
-    $discount_line_item_current_amount = $discount_line_item_price['amount'];
+      $discount_line_item_price = commerce_price_wrapper_value($discount_line_item_wrapper, 'commerce_unit_price', TRUE);
+      $discount_line_item_current_amount = $discount_line_item_price['amount'];
+      $discounted_amount = $discount_line_item_current_amount - ($line_item_current_amount * $rate * $line_item_wrapper->quantity->value());
 
-    $discounted_amount = $discount_line_item_current_amount - ($line_item_current_amount * $rate * $line_item->quantity);
+      // Calculate the updated amount and create a price array representing the
+      // difference between it and the current amount.
+      $updated_amount = commerce_round(COMMERCE_ROUND_HALF_UP, $discounted_amount);
 
-    // Calculate the updated amount and create a price array representing the
-    // difference between it and the current amount.
-    $updated_amount = commerce_round(COMMERCE_ROUND_HALF_UP, $discounted_amount);
+      $difference = array(
+        'amount' => $updated_amount - $discount_line_item_current_amount,
+        'currency_code' => $line_item_unit_price['currency_code'],
+        'data' => array('discount_name' => $discount_wrapper->getIdentifier()),
+      );
 
-    $difference = array(
-      'amount' => $updated_amount - $discount_line_item_current_amount,
-      'currency_code' => $line_item_unit_price['currency_code'],
-      'data' => array('discount_name' => $discount_wrapper->getIdentifier()),
-    );
+      // Set the amount of the unit price and add the difference as a component.
+      $discount_line_item_wrapper->commerce_unit_price->amount = $updated_amount;
 
-    // Set the amount of the unit price and add the difference as a component.
-    $discount_line_item_wrapper->commerce_unit_price->amount = $updated_amount;
-
-    $discount_line_item_wrapper->commerce_unit_price->data = commerce_price_component_add(
-      $discount_line_item_wrapper->commerce_unit_price->value(),
-      'discount',
-      $difference,
-      TRUE
-    );
+      $discount_line_item_wrapper->commerce_unit_price->data = commerce_price_component_add(
+        $discount_line_item_wrapper->commerce_unit_price->value(),
+        'discount',
+        $difference,
+        TRUE
+      );
+    }
   }
 
   return $discount_line_item_wrapper->value();
