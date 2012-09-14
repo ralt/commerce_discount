@@ -162,7 +162,7 @@ function commerce_discount_entity_info() {
  */
 function commerce_discount_modules_enabled($modules) {
   foreach (commerce_discount_types() as $type => $value) {
-    if (!field_info_instance('commerce_discount', 'commerce_discount_offer', $type)) {
+    if (!field_read_instance('commerce_discount', 'commerce_discount_offer', $type, array('include_inactive' => TRUE))) {
       $instance = array(
         'field_name' => 'commerce_discount_offer',
         'entity_type' => 'commerce_discount',
