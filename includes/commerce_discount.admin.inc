@@ -61,6 +61,17 @@ class CommerceDiscountUIController extends EntityDefaultUIController {
     );
     $items[$this->path . '/add']['title callback'] = 'commerce_discount_get_action_title';
     $items[$this->path . '/import']['title callback'] = 'commerce_discount_get_action_title';
+
+    $items[$this->path . '/settings'] = array(
+      'title' => 'Settings',
+      'description' => 'Additional settings for Commerce Discounts.',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('commerce_discount_settings'),
+      'access arguments' => array('administer commerce discounts'),
+      'type' => MENU_LOCAL_TASK,
+      'file' => 'includes/commerce_discount.admin.inc',
+      'file path' => drupal_get_path('module', 'commerce_discount'),
+    );
     return $items;
   }
 }
@@ -262,4 +273,20 @@ function _commerce_discount_name_exists($value) {
   $name = 'discount_' . $value;
 
   return entity_load_single('commerce_discount', $name);
+}
+
+/**
+ * Builds the discount settings form.
+ */
+function commerce_discount_settings() {
+  $types = commerce_line_item_type_get_name();
+  unset($types['commerce_discount']);
+  $form['commerce_discount_line_item_types'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Line item types to use for discounts'),
+    '#default_value' => variable_get('commerce_discount_line_item_types', array('product')),
+    '#options' => $types,
+    '#description' => t('Select the line item types that will be taken into account for calculating the discount amounts in percentage offers.'),
+  );
+  return system_settings_form($form);
 }

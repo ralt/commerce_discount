@@ -198,4 +198,7 @@ function commerce_discount_uninstall() {
   field_delete_field('commerce_fixed_amount');
   field_delete_field('commerce_percentage');
   field_delete_field('commerce_discounts');
+
+  // Delete variable settings.
+  variable_del('commerce_discount_line_item_types');
 }

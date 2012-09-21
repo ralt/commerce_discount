@@ -63,7 +63,7 @@ function commerce_discount_fixed_amount(EntityDrupalWrapper $wrapper, $discount_
   switch ($wrapper->type()) {
     case 'commerce_order':
       // Set reference to the discount.
-      // TODO: It doesn't work with the wrapper.
+      // @todo: It doesn't work with the wrapper.
       $order = $wrapper->value();
       $delta = $wrapper->commerce_discounts->count();
       $order->commerce_discounts[LANGUAGE_NONE][$delta]['target_id'] = $discount_wrapper->discount_id->value();
@@ -98,6 +98,9 @@ function commerce_discount_fixed_amount(EntityDrupalWrapper $wrapper, $discount_
 function commerce_discount_percentage(EntityDrupalWrapper $wrapper, $discount_name) {
   $discount_wrapper = entity_metadata_wrapper('commerce_discount', $discount_name);
   $rate = $discount_wrapper->commerce_discount_offer->commerce_percentage->value();
+  // Get the line item types to apply the discount to.
+  $line_item_types = variable_get('commerce_discount_line_item_types', array('product'));
+
   if ($rate > 1) {
     $rate = $rate / 100;
   }
@@ -109,7 +112,7 @@ function commerce_discount_percentage(EntityDrupalWrapper $wrapper, $discount_na
       }
 
       // Set reference to the discount.
-      // TODO: It doesn't work with the wrapper.
+      // @todo: It doesn't work with the wrapper.
       $order = $wrapper->value();
       $delta = $wrapper->commerce_discounts->count();
       $order->commerce_discounts[LANGUAGE_NONE][$delta]['target_id'] = $discount_wrapper->discount_id->value();
@@ -117,26 +120,34 @@ function commerce_discount_percentage(EntityDrupalWrapper $wrapper, $discount_na
       $calculated_discount = 0;
       // Loop the line items of the order and calculate the total discount.
       foreach ($wrapper->commerce_line_items as $line_item_wrapper) {
-        if (in_array($line_item_wrapper->type->value(), commerce_product_line_item_types())) {
+        if (!empty($line_item_types[$line_item_wrapper->type->value()])) {
           $line_item_total = commerce_price_wrapper_value($line_item_wrapper, 'commerce_total', TRUE);
           $calculated_discount += $line_item_total['amount'] * $rate;
         }
       }
 
-      $discount_amount = array(
-        'amount' => $calculated_discount * -1,
-        'currency_code' => $wrapper->commerce_order_total->currency_code->value(),
-      );
-      commerce_discount_add_line_item($wrapper, $discount_name, $discount_amount);
+      if ($calculated_discount) {
+        $discount_amount = array(
+          'amount' => $calculated_discount * -1,
+          'currency_code' => $wrapper->commerce_order_total->currency_code->value(),
+        );
+        commerce_discount_add_line_item($wrapper, $discount_name, $discount_amount);
 
-      // Updating the commerce order calculate price; For some reason, without
-      // the following call to commerce_order_calculate_total() the discount
-      // components aren't re-added after they get deleted in
-      // commerce_discount_commerce_order_presave().
-      commerce_order_calculate_total($order);
+        // Updating the commerce order calculate price; For some reason, without
+        // the following call to commerce_order_calculate_total() the discount
+        // components aren't re-added after they get deleted in
+        // commerce_discount_commerce_order_presave().
+        commerce_order_calculate_total($order);
+      }
       break;
 
     case 'commerce_line_item':
+      // Check if the line item is configured in the settings to apply the
+      // discount.
+      if (empty($line_item_types[$wrapper->type->value()])) {
+        return;
+      }
+
       // Check whether this discount was already added as a price component.
       $price_data = $wrapper->commerce_unit_price->data->value();
       foreach ($price_data['components'] as $component) {
