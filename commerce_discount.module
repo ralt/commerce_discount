@@ -12,6 +12,11 @@
  * Remove any existing commerce discount line item.
  */
 function commerce_discount_commerce_order_presave($order) {
+  // Be sure we're only altering orders in cart status.
+  if (!in_array($order->status, array_keys(commerce_order_statuses(array('cart' => TRUE))))) {
+    return;
+  }
+
   $wrapper = entity_metadata_wrapper('commerce_order', $order);
 
   // Remove all discount refrences from the order.
