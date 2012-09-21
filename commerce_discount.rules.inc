@@ -99,7 +99,7 @@ function commerce_discount_percentage(EntityDrupalWrapper $wrapper, $discount_na
   $discount_wrapper = entity_metadata_wrapper('commerce_discount', $discount_name);
   $rate = $discount_wrapper->commerce_discount_offer->commerce_percentage->value();
   // Get the line item types to apply the discount to.
-  $line_item_types = variable_get('commerce_discount_line_item_types', array('product'));
+  $line_item_types = variable_get('commerce_discount_line_item_types', array('product' => 'product'));
 
   if ($rate > 1) {
     $rate = $rate / 100;
