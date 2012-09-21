@@ -79,9 +79,9 @@ function commerce_discount_fixed_amount(EntityDrupalWrapper $wrapper, $discount_
 
     case 'commerce_line_item':
       // Check whether this discount was already added as a price component.
-      $components = $wrapper->commerce_unit_price->data->value();
+      $price_data = $wrapper->commerce_unit_price->data->value();
 
-      foreach ($components as $component) {
+      foreach ($price_data['components'] as $component) {
         if (!empty($component['price']['data']['discount_name']) && $component['price']['data']['discount_name'] == $discount_wrapper->getIdentifier()) {
           return;
         }
@@ -138,8 +138,8 @@ function commerce_discount_percentage(EntityDrupalWrapper $wrapper, $discount_na
 
     case 'commerce_line_item':
       // Check whether this discount was already added as a price component.
-      $components = $wrapper->commerce_unit_price->data->value();
-      foreach ($components as $component) {
+      $price_data = $wrapper->commerce_unit_price->data->value();
+      foreach ($price_data['components'] as $component) {
         if (!empty($component['price']['data']['discount_name']) && $component['price']['data']['discount_name'] == $discount_name) {
           return;
         }
