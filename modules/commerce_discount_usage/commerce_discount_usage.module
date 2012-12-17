@@ -120,8 +120,10 @@ function commerce_discount_usage_commerce_order_insert($commerce_order) {
   $wrapper = entity_metadata_wrapper('commerce_order', $commerce_order);
 
   // Update usage count on all discounts the got attached to this order.
-  foreach ($wrapper->commerce_discounts->value() as $commerce_discount) {
-    commerce_discount_usage_update_usage_count($commerce_discount, 1);
+  if (isset($wrapper->commerce_discounts)) {
+    foreach ($wrapper->commerce_discounts->value() as $commerce_discount) {
+      commerce_discount_usage_update_usage_count($commerce_discount, 1);
+    }
   }
 }
 
@@ -134,8 +136,10 @@ function commerce_discount_usage_commerce_order_delete($commerce_order) {
   $wrapper = entity_metadata_wrapper('commerce_order', $commerce_order);
 
   // Update usage count on all discounts the got attached to this order.
-  foreach ($wrapper->commerce_discounts->value() as $commerce_discount) {
-    commerce_discount_usage_update_usage_count($commerce_discount, -1);
+  if (isset($wrapper->commerce_discounts)) {
+    foreach ($wrapper->commerce_discounts->value() as $commerce_discount) {
+      commerce_discount_usage_update_usage_count($commerce_discount, -1);
+    }
   }
 }
 
