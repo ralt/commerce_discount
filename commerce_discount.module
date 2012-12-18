@@ -164,7 +164,7 @@ function commerce_discount_modules_enabled($modules) {
         'required' => TRUE,
         'widget' => array(
           'module' => 'inline_entity_form',
-          'type' => 'inline_entity_form',
+          'type' => 'inline_entity_form_single',
         ),
       );
       field_create_instance($instance);
