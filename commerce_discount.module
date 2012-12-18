@@ -61,7 +61,7 @@ function commerce_discount_remove_discount_components($price_wrapper) {
   $component_removed = FALSE;
   // Remove price components belonging to order discounts.
   foreach ($data['components'] as $key => $component) {
-    if ($component['name'] != 'discount') {
+    if ($component['name'] != 'discount' || empty($component['price']['data']['discount_name'])) {
       continue;
     }
     $discount_name = $component['price']['data']['discount_name'];
