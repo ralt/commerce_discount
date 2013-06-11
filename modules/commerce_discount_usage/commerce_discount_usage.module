@@ -103,8 +103,7 @@ function commerce_discount_usage_form_commerce_discount_form_alter(&$form, $form
   );
 
   // Show uses as readonly on edit, hide completely on add.
-  $uses[LANGUAGE_NONE][0]['value']['#type'] = 'item';
-  $uses[LANGUAGE_NONE][0]['value']['#markup'] = $uses[LANGUAGE_NONE][0]['value']['#default_value'];
+  $uses[LANGUAGE_NONE][0]['value']['#disabled'] = true;
   if ($form_state['op'] == 'add') {
     $uses['#access'] = FALSE;
   }
