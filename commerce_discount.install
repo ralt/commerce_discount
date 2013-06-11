@@ -178,6 +178,54 @@ function commerce_discount_install() {
     'label' => t('Discount reference'),
   );
   field_create_instance($instance);
+
+  $field = array(
+    'entity_types'      => array('commerce_discount'),
+    'field_name'        => 'commerce_discount_ic_order',
+    'type'              => 'inline_conditions',
+    'instance_settings' => array('entity_type' => 'commerce_order'),
+    'cardinality'       => FIELD_CARDINALITY_UNLIMITED,
+  );
+  field_create_field($field);
+
+  $instance = array(
+    'field_name'  => 'commerce_discount_ic_order',
+    'entity_type' => 'commerce_discount',
+    'bundle'      => 'order_discount',
+    'label'       => t('Order conditions'),
+    'required'    => FALSE,
+    'settings'    => array(
+      'entity_type' => 'commerce_order',
+    ),
+    'widget'      => array(
+      'type' => 'inline_conditions',
+    ),
+  );
+  field_create_instance($instance);
+
+  $field = array(
+    'entity_types'      => array('commerce_discount'),
+    'field_name'        => 'commerce_discount_ic_product',
+    'type'              => 'inline_conditions',
+    'instance_settings' => array('entity_type' => 'commerce_line_item'),
+    'cardinality'       => FIELD_CARDINALITY_UNLIMITED,
+  );
+  field_create_field($field);
+
+  $instance = array(
+    'field_name'  => 'commerce_discount_ic_product',
+    'entity_type' => 'commerce_discount',
+    'bundle'      => 'product_discount',
+    'label'       => t('Product conditions'),
+    'required'    => FALSE,
+    'settings'    => array(
+      'entity_type' => 'commerce_line_item',
+    ),
+    'widget'      => array(
+      'type' => 'inline_conditions',
+    ),
+  );
+  field_create_instance($instance);
 }
 
 /**
@@ -198,6 +246,8 @@ function commerce_discount_uninstall() {
   field_delete_field('commerce_fixed_amount');
   field_delete_field('commerce_percentage');
   field_delete_field('commerce_discounts');
+  field_delete_field('commerce_discount_ic_order');
+  field_delete_field('commerce_discount_ic_product');
 
   // Delete variable settings.
   variable_del('commerce_discount_line_item_types');
