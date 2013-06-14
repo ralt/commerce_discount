@@ -181,7 +181,7 @@ function commerce_discount_install() {
 
   $field = array(
     'entity_types'      => array('commerce_discount'),
-    'field_name'        => 'commerce_discount_ic_order',
+    'field_name'        => 'inline_conditions',
     'type'              => 'inline_conditions',
     'instance_settings' => array('entity_type' => 'commerce_order'),
     'cardinality'       => FIELD_CARDINALITY_UNLIMITED,
@@ -189,7 +189,7 @@ function commerce_discount_install() {
   field_create_field($field);
 
   $instance = array(
-    'field_name'  => 'commerce_discount_ic_order',
+    'field_name'  => 'inline_conditions',
     'entity_type' => 'commerce_discount',
     'bundle'      => 'order_discount',
     'label'       => t('Order conditions'),
@@ -203,17 +203,8 @@ function commerce_discount_install() {
   );
   field_create_instance($instance);
 
-  $field = array(
-    'entity_types'      => array('commerce_discount'),
-    'field_name'        => 'commerce_discount_ic_product',
-    'type'              => 'inline_conditions',
-    'instance_settings' => array('entity_type' => 'commerce_line_item'),
-    'cardinality'       => FIELD_CARDINALITY_UNLIMITED,
-  );
-  field_create_field($field);
-
   $instance = array(
-    'field_name'  => 'commerce_discount_ic_product',
+    'field_name'  => 'inline_conditions',
     'entity_type' => 'commerce_discount',
     'bundle'      => 'product_discount',
     'label'       => t('Product conditions'),
@@ -246,8 +237,7 @@ function commerce_discount_uninstall() {
   field_delete_field('commerce_fixed_amount');
   field_delete_field('commerce_percentage');
   field_delete_field('commerce_discounts');
-  field_delete_field('commerce_discount_ic_order');
-  field_delete_field('commerce_discount_ic_product');
+  field_delete_field('inline_conditions');
 
   // Delete variable settings.
   variable_del('commerce_discount_line_item_types');
