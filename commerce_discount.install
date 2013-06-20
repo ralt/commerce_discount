@@ -131,6 +131,7 @@ function commerce_discount_install_helper() {
         'widget' => array(
           'module' => 'inline_entity_form',
           'type' => 'inline_entity_form_single',
+          'weight' => -12,
         ),
       );
       field_create_instance($instance);
@@ -230,6 +231,7 @@ function commerce_discount_install_helper() {
         ),
         'widget'      => array(
           'type' => 'inline_conditions',
+          'weight' => -13,
         ),
       );
       field_create_instance($instance);

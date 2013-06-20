@@ -21,6 +21,9 @@ function commerce_discount_usage_modules_enabled($modules) {
         'bundle' => $type,
         'label' => t('Times used'),
         'default_value' => array(0 => array('value' => 0)),
+        'widget' => array(
+          'weight' => -8,
+        )
       );
       field_create_instance($instance);
     }
@@ -31,6 +34,9 @@ function commerce_discount_usage_modules_enabled($modules) {
         'bundle' => $type,
         'label' => t('Max uses'),
         'default_value' => array(0 => array('value' => 50)),
+        'widget' => array(
+          'weight' => -9,
+        )
       );
       field_create_instance($instance);
     }
