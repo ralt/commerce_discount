@@ -146,29 +146,11 @@ function commerce_discount_entity_info() {
 }
 
 /**
- * Implements hook_modules_enabled().
- *
- * Add commerce discount offer reference field.
- *
- * @see hook_install()
+ * Implements hook_flush_caches().
  */
-function commerce_discount_modules_enabled($modules) {
-  foreach (commerce_discount_types() as $type => $value) {
-    if (!field_read_instance('commerce_discount', 'commerce_discount_offer', $type, array('include_inactive' => TRUE))) {
-      $instance = array(
-        'field_name' => 'commerce_discount_offer',
-        'entity_type' => 'commerce_discount',
-        'bundle' => $type,
-        'label' => t('Discount offer reference'),
-        'required' => TRUE,
-        'widget' => array(
-          'module' => 'inline_entity_form',
-          'type' => 'inline_entity_form_single',
-        ),
-      );
-      field_create_instance($instance);
-    }
-  }
+function commerce_discount_flush_caches() {
+  module_load_install('commerce_discount');
+  commerce_discount_install_helper();
 }
 
 /**
@@ -294,12 +276,12 @@ function commerce_discount_access($op, $entity, $account, $entity_type) {
 function commerce_discount_commerce_discount_type_info() {
   $types = array();
   $types['order_discount'] = array(
-    'label' => t('Order Discount'),
+    'label' => t('Order discount'),
     'event' => 'commerce_discount_order',
     'entity type' => 'commerce_order',
   );
   $types['product_discount'] = array(
-    'label' => t('Product Discount'),
+    'label' => t('Product discount'),
     'event' => 'commerce_product_calculate_sell_price',
     // The line item of the product.
     'entity type' => 'commerce_line_item',
