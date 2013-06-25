@@ -45,6 +45,8 @@
   margin: 0; }
   .field-name-commerce-discount-offer .form-wrapper .form-wrapper > .form-item > label {
     border-bottom: 1px solid #cccccc; }
+  .field-name-commerce-discount-offer .form-wrapper .form-wrapper > .form-item.form-type-select > label {
+    border-bottom: inherit; }
   .field-name-commerce-discount-offer span.fieldset-legend {
     display: none; }
   .field-name-commerce-discount-offer .fieldset-wrapper {

@@ -32,6 +32,29 @@ function commerce_discount_rules_action_info() {
     );
   }
 
+  $items['commerce_discount_free_shipping_service'] = array(
+    'label' => t('Free shipping service'),
+    'group' => t('Commerce Discount'),
+    'parameter' => array(
+      'entity' => array(
+        'label' => t('Entity'),
+        'type' => 'entity',
+        'wrapped' => FALSE,
+      ),
+      'commerce_discount' => array(
+        'label' => t('Commerce discount'),
+        'type' => 'token',
+        'options list' => 'commerce_discount_entity_list',
+      ),
+      'shipping_service' => array(
+        'label' => t('Shipping service'),
+        'type' => 'token',
+        'options list' => 'commerce_shipping_service_options_list'
+      )
+    ),
+    'base' => 'commerce_discount_free_shipping_service',
+  );
+
   return $items;
 }
 
@@ -39,13 +62,20 @@ function commerce_discount_rules_action_info() {
  * Implements hook_rules_event_info().
  */
 function commerce_discount_rules_event_info() {
-  $items = array(
-    'commerce_discount_order' => array(
-      'label' => t('Apply a discount to a given order'),
-      'group' => t('Commerce - discount'),
-      'variables' => entity_rules_events_variables('commerce_order', t('Order', array(), array('context' => 'a drupal commerce order'))),
-      'access callback' => 'commerce_order_rules_access',
-    ),
+  $items = array();
+
+  $items['commerce_discount_order'] = array(
+    'label' => t('Apply a discount to a given order'),
+    'group' => t('Commerce - discount'),
+    'variables' => entity_rules_events_variables('commerce_order', t('Order', array(), array('context' => 'a drupal commerce order'))),
+    'access callback' => 'commerce_order_rules_access',
+  );
+
+  $items['commerce_discount_free_shipping'] = array(
+    'label' => t('Makes a shipping service free'),
+    'group' => t('Commerce - discount'),
+    'variables' => entity_rules_events_variables('commerce_order', t('Order', array(), array('context' => 'a drupal commerce order'))),
+    'access callback' => 'commerce_order_rules_access',
   );
 
   return $items;
@@ -165,6 +195,41 @@ function commerce_discount_percentage(EntityDrupalWrapper $wrapper, $discount_na
       );
       commerce_discount_add_price_component($wrapper, $discount_name, $discount_amount);
       break;
+  }
+}
+
+/**
+ * Rules action: Apply free shipping discount.
+ *
+ * @param object $order
+ *   Wrapped commerce_order entity type.
+ * @param string $discount_name
+ *   The name of the discount.
+ * @param string $service_name
+ *   The shipping service machine-name.
+ */
+function commerce_discount_free_shipping_service($order, $discount_name, $service_name) {
+  if (isset($order->shipping_rates[$service_name])) {
+    $wrapper_line_item = entity_metadata_wrapper('commerce_line_item', $order->shipping_rates[$service_name]);
+
+    // Exit if the rule has already been processed.
+    if ($wrapper_line_item->commerce_unit_price->amount->value() == 0) {
+      return;
+    }
+
+    $wrapper_line_item->commerce_unit_price->amount = 0;
+
+    $shipping_service = commerce_shipping_service_load($service_name);
+
+    // Updating the data component.
+    $wrapper_line_item->commerce_unit_price->data = array();
+    $wrapper_line_item->commerce_unit_price->data = commerce_price_component_add(
+      $wrapper_line_item->commerce_unit_price->value(),
+      $shipping_service['price_component'],
+      $wrapper_line_item->commerce_unit_price->value(),
+      TRUE,
+      FALSE
+    );
   }
 }
 
