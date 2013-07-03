@@ -162,9 +162,11 @@ function commerce_discount_usage_commerce_cart_product_add($order, $product, $qu
       continue;
     }
 
-    // When discount found, increment its usage count by one.
-    $discount_name = $component['price']['data']['discount_name'];
-    commerce_discount_usage_update_usage_count($discount_name, 1);
+    if (!empty($component['price']['data']['discount_name'])) {
+      // When discount found, increment its usage count by one.
+      $discount_name = $component['price']['data']['discount_name'];
+      commerce_discount_usage_update_usage_count($discount_name, 1);
+    }
   }
 }
 
@@ -182,9 +184,11 @@ function commerce_discount_usage_commerce_cart_product_remove($order, $product, 
       continue;
     }
 
-    // When discount found, decrement its usage count by one.
-    $discount_name = $component['price']['data']['discount_name'];
-    commerce_discount_usage_update_usage_count($discount_name, -1);
+    if (!empty($component['price']['data']['discount_name'])) {
+      // When discount found, decrement its usage count by one.
+      $discount_name = $component['price']['data']['discount_name'];
+      commerce_discount_usage_update_usage_count($discount_name, -1);
+    }
   }
 }
 
