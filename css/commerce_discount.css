@@ -31,6 +31,9 @@
 .commerce-discount-form #commerce-discount-fields-wrapper > .form-wrapper {
   margin-bottom: 15px;
 }
+.commerce-discount-form #edit-actions {
+  clear: both;
+}
 
 /**
  * Choose discount type block.
