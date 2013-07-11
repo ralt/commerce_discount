@@ -159,18 +159,12 @@
   border-bottom: 0;
   padding-left: 0;
 }
-.field-name-commerce-discount-offer .form-wrapper .form-wrapper .form-wrapper.field-type-commerce-price, .field-name-commerce-discount-offer .form-wrapper .form-wrapper .form-wrapper.field-type-number-decimal, .field-name-commerce-discount-offer .form-wrapper .form-wrapper .form-wrapper.field-name-commerce-free-shipping {
-  padding: 0px;
-}
-.field-name-commerce-discount-offer .form-wrapper .form-wrapper .form-wrapper.field-type-commerce-price .form-item, .field-name-commerce-discount-offer .form-wrapper .form-wrapper .form-wrapper.field-type-number-decimal .form-item, .field-name-commerce-discount-offer .form-wrapper .form-wrapper .form-wrapper.field-name-commerce-free-shipping .form-item {
-  margin: 5px 0 0 0;
-}
-.field-name-commerce-discount-offer .form-wrapper .form-wrapper .form-wrapper.field-type-commerce-price, .field-name-commerce-discount-offer .form-wrapper .form-wrapper .form-wrapper.field-name-commerce-percentage, .field-name-commerce-discount-offer .form-wrapper .form-wrapper .form-wrapper.field-name-commerce-free-shipping {
-  background-color: transparent;
-  float: left;
-  /* LTR */
-  margin: 10px;
-  padding: 4px;
+.field-name-commerce-discount-offer .form-wrapper .form-wrapper .form-wrapper .form-item {
+    background-color: transparent;
+    float: left;
+    /* LTR */
+    margin: 10px;
+    padding: 4px;
 }
 
 /**

@@ -291,6 +291,32 @@ function commerce_discount_install_helper() {
     );
     field_create_instance($instance);
   }
+
+  // Creating field and its instance for free products offer type.
+  if (empty($fields['commerce_free_products'])) {
+    $field = array(
+      'entity_types' => array('commerce_discount_offer'),
+      'field_name' => 'commerce_free_products',
+      'type' => 'commerce_product_reference',
+      'locked' => TRUE,
+      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    );
+    field_create_field($field);
+}
+  if (empty($instances['commerce_discount_offer']['free_products']['commerce_free_products'])) {
+    $instance = array(
+      'field_name' => 'commerce_free_products',
+      'entity_type' => 'commerce_discount_offer',
+      'bundle' => 'free_products',
+      'label' => t('Select free products'),
+      'description' => t('Enter a comma-separated list of SKUs. Each product is added to customer order with a quantity of 1.'),
+      'required' => TRUE,
+      'widget' => array(
+        'type' => 'commerce_product_reference_autocomplete',
+      ),
+    );
+    field_create_instance($instance);
+  }
 }
 
 /**
@@ -308,6 +334,7 @@ function commerce_discount_uninstall() {
   field_attach_delete_bundle('commerce_discount_offer', 'fixed_amount');
   field_attach_delete_bundle('commerce_discount_offer', 'percentage');
   field_attach_delete_bundle('commerce_discount_offer', 'free_shipping');
+  field_attach_delete_bundle('commerce_discount_offer', 'free_products');
 
   commerce_delete_field('commerce_discount_offer');
   commerce_delete_field('commerce_fixed_amount');
@@ -315,6 +342,7 @@ function commerce_discount_uninstall() {
   commerce_delete_field('commerce_discounts');
   commerce_delete_field('inline_conditions');
   commerce_delete_field('commerce_free_shipping');
+  commerce_delete_field('commerce_free_products');
 
   // Delete variable settings.
   variable_del('commerce_discount_line_item_types');

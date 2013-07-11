@@ -98,7 +98,7 @@ html.js input.form-autocomplete {
   padding-right: 5px;
   padding-left: 0;
 }
-.field-name-commerce-discount-offer .form-wrapper .form-wrapper .form-wrapper.field-type-commerce-price, .field-name-commerce-discount-offer .form-wrapper .form-wrapper .form-wrapper.field-name-commerce-percentage, .field-name-commerce-discount-offer .form-wrapper .form-wrapper .form-wrapper.field-name-commerce-free-shipping {
+.field-name-commerce-discount-offer .form-wrapper .form-wrapper .form-wrapper .form-item {
   float: right;
 }
 

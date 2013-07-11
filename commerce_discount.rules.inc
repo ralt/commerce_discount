@@ -12,7 +12,7 @@ function commerce_discount_rules_action_info() {
   $types = commerce_discount_offer_types();
   $items = array();
 
-  foreach (array('fixed_amount', 'percentage') as $type) {
+  foreach (array('fixed_amount', 'percentage', 'free_products') as $type) {
     $items[$types[$type]['action']] = array(
       'label' => $types[$type]['label'],
       'parameter' => array(
@@ -231,6 +231,55 @@ function commerce_discount_free_shipping_service($order, $discount_name, $servic
       FALSE
     );
   }
+}
+
+/**
+ * Rules action: Apply free products discount.
+ *
+ * @param EntityDrupalWrapper $wrapper
+ *   Wrapped commerce_order entity type.
+ * @param string $discount_name
+ *   The name of the discount.
+ */
+function commerce_discount_free_products(EntityDrupalWrapper $wrapper, $discount_name) {
+  $discount_wrapper = entity_metadata_wrapper('commerce_discount', $discount_name);
+  if (!$products = $discount_wrapper->commerce_discount_offer->commerce_free_products->value()) {
+    return;
+  }
+
+  // Set reference to the discount.
+  $order = $wrapper->value();
+  $delta = $wrapper->commerce_discounts->count();
+  $order->commerce_discounts[LANGUAGE_NONE][$delta]['target_id'] = $discount_wrapper->discount_id->value();
+
+  // Loop on products and add each product to order line items.
+  foreach ($products as $product) {
+    //TODO: Add display_path property to line item data context in order to expose product link in shopping cart.
+    $data = array('context' => array('commerce_discount_offer' => 'free_products', 'discount_name' => $discount_name));
+    $line_item = commerce_product_line_item_new($product, 1, $order->order_id, $data);
+
+    $wrapper_line_item = entity_metadata_wrapper('commerce_line_item', $line_item);
+
+    // Getting the product price and negate it for the discount component price.
+    $product_unit_price = commerce_price_wrapper_value(entity_metadata_wrapper('commerce_product', $product), 'commerce_price');
+    $discount_amount = array(
+      'amount' => -$product_unit_price['amount'],
+      'currency_code' => $product_unit_price['currency_code'],
+    );
+
+    commerce_discount_add_price_component($wrapper_line_item, $discount_name, $discount_amount);
+
+    commerce_line_item_save($line_item);
+
+    // Add the free product to order's line items.
+    $wrapper->commerce_line_items[] = $line_item;
+  }
+
+  // Updating the commerce order calculate price; For some reason, without
+  // the following call to commerce_order_calculate_total() the discount
+  // components aren't re-added after they get deleted in
+  // commerce_discount_commerce_order_presave().
+  commerce_order_calculate_total($order);
 }
 
 /**

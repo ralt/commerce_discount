@@ -129,19 +129,7 @@
         padding-left: 0;
       }
 
-      &.field-type-commerce-price,
-      &.field-type-number-decimal,
-      &.field-name-commerce-free-shipping {
-        @include box;
-
-        .form-item {
-          margin: 5px 0 0 0;
-        }
-      }
-
-      &.field-type-commerce-price,
-      &.field-name-commerce-percentage,
-      &.field-name-commerce-free-shipping {
+      &.form-item {
         background-color: transparent;
         float: left; /* LTR */
         margin: 10px;
