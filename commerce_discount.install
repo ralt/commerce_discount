@@ -90,6 +90,29 @@ function commerce_discount_schema() {
 }
 
 /**
+ * Implements hook_requirements().
+ *
+ * Ensure inline_conditions is enabled.
+ */
+function commerce_discount_requirements($phase) {
+  $requirements = array();
+  // Ensure translations don't break during installation.
+  $t = get_t();
+
+  if ($phase == 'runtime') {
+    if (!module_exists('inline_conditions')) {
+      $requirements['inline_conditions'] = array(
+        'title' => $t('Inline conditions'),
+        'value' => $t('Inline conditions has to be installed.'),
+        'severity' => REQUIREMENT_WARNING,
+      );
+    }
+  }
+
+  return $requirements;
+}
+
+/**
  * Helper function to define and create the required fields & instances in case
  * they don't exist already.
  *
@@ -100,8 +123,15 @@ function commerce_discount_schema() {
 function commerce_discount_install_helper() {
   $fields = field_info_fields();
   $instances = field_info_instances();
+  $field_types = field_info_field_types();
 
-  if (empty($fields['commerce_discount_offer'])) {
+  if (!isset($field_types['entityreference']) || !isset($field_types['inline_conditions'])) {
+    // Clear field info cache, so entity reference & inline_conditions field can
+    // be used.
+    field_info_cache_clear();
+  }
+
+  if (empty($fields['commerce_discount_offer']) && isset($field_types['entityreference'])) {
     // Create entity reference field.
     $field = array(
       'entity_types' => array('commerce_discount'),
@@ -208,7 +238,7 @@ function commerce_discount_install_helper() {
     field_create_instance($instance);
   }
 
-  if (empty($fields['inline_conditions'])) {
+  if (empty($fields['inline_conditions']) && isset($field_types['inline_conditions'])) {
     $field = array(
       'entity_types'      => array('commerce_discount'),
       'field_name'        => 'inline_conditions',
@@ -219,7 +249,7 @@ function commerce_discount_install_helper() {
     field_create_field($field);
   }
   foreach (commerce_discount_types() as $type => $value) {
-    if (empty($instances['commerce_discount'][$type]['inline_conditions'])) {
+    if (empty($instances['commerce_discount'][$type]['inline_conditions']) && isset($field_types['inline_conditions'])) {
       $instance = array(
         'field_name'  => 'inline_conditions',
         'entity_type' => 'commerce_discount',
