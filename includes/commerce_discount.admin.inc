@@ -130,6 +130,13 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
     '#required' => TRUE,
   );
 
+  $form['component_title'] = array(
+    '#title' => t('Name'),
+    '#type' => 'textfield',
+    '#default_value' => $commerce_discount->component_title,
+    '#description' => t('Shown to customers.'),
+  );
+
   // Machine-readable type name.
   $form['name'] = array(
     '#type' => 'machine_name',

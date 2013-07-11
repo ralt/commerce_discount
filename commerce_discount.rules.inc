@@ -285,14 +285,14 @@ function commerce_discount_free_products(EntityDrupalWrapper $wrapper, $discount
 /**
  * Creates a discount line item on the provided order.
  *
- * @param $order_wrapper
+ * @param EntityDrupalWrapper $order_wrapper
  *   The wrapped order entity.
- * @param $discount_name
+ * @param string $discount_name
  *   The name of the discount being applied.
- * @param $dicount_amount
+ * @param array $discount_amount
  *   The discount amount price array (amount, currency_code).
  */
-function commerce_discount_add_line_item($order_wrapper, $discount_name, $discount_amount) {
+function commerce_discount_add_line_item(EntityDrupalWrapper $order_wrapper, $discount_name, $discount_amount) {
   // Create a new line item.
   $discount_line_item = entity_create('commerce_line_item', array(
     'type' => 'commerce_discount',
@@ -325,15 +325,17 @@ function commerce_discount_add_line_item($order_wrapper, $discount_name, $discou
 /**
  * Adds a discount price component to the provided line item.
  *
- * @param $line_item_wrapper
+ * @param EntityDrupalWrapper $line_item_wrapper
  *   The wrapped line item entity.
- * @param $discount_name
+ * @param string $discount_name
  *   The name of the discount being applied.
- * @param $dicount_amount
+ * @param array $discount_amount
  *   The discount amount price array (amount, currency_code).
  */
-function commerce_discount_add_price_component($line_item_wrapper, $discount_name, $discount_amount) {
+function commerce_discount_add_price_component(EntityDrupalWrapper $line_item_wrapper, $discount_name, $discount_amount) {
   $unit_price = commerce_price_wrapper_value($line_item_wrapper, 'commerce_unit_price', TRUE);
+  $discount_wrapper = entity_metadata_wrapper('commerce_discount', $discount_name);
+  $component_title = $discount_wrapper->component_title->value();
   $current_amount = $unit_price['amount'];
   // Currencies don't match, abort.
   if ($discount_amount['currency_code'] != $unit_price['currency_code']) {
@@ -347,7 +349,10 @@ function commerce_discount_add_price_component($line_item_wrapper, $discount_nam
   $difference = array(
     'amount' => $discount_amount['amount'],
     'currency_code' => $discount_amount['currency_code'],
-    'data' => array('discount_name' => $discount_name),
+    'data' => array(
+      'discount_name' => $discount_name,
+      'discount_component_title' => empty($component_title) ? 'discount' : $component_title,
+    ),
   );
 
   // Set the amount of the unit price and add the difference as a component.
@@ -355,7 +360,7 @@ function commerce_discount_add_price_component($line_item_wrapper, $discount_nam
 
   $line_item_wrapper->commerce_unit_price->data = commerce_price_component_add(
     $line_item_wrapper->commerce_unit_price->value(),
-    'discount',
+    empty($component_title) ? 'discount' : $component_title,
     $difference,
     TRUE
   );

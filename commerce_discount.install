@@ -60,6 +60,12 @@ function commerce_discount_schema() {
         'length' => 255,
         'not null' => FALSE,
       ),
+      'component_title' => array(
+        'description' => 'The component price title',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
     ),
     'primary key' => array('discount_id'),
     'unique keys' => array(
@@ -363,3 +369,12 @@ function commerce_discount_update_7101(){
   }
 }
 
+/**
+ * #2034685 Discount component price names.
+ *
+ * Add a new column in commerce_discount table in order to display customized
+ * component price title for a discount.
+ */
+function commerce_discount_update_7102() {
+  db_add_field('commerce_discount', 'component_title', array('description' => 'The component price title', 'type' => 'varchar', 'length' => 255, 'not null' => FALSE));
+}
