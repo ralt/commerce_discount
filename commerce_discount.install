@@ -383,5 +383,5 @@ function commerce_discount_update_7102() {
  * Update properties of product_discount bundle.
  */
 function commerce_discount_update_7103() {
-  commerce_line_item_configure_line_item_type('product_discount');
+  commerce_line_item_configure_line_item_fields(array('commerce_discount'));
 }
