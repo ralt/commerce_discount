@@ -80,6 +80,8 @@ function commerce_discount_usage_form_commerce_discount_form_alter(&$form, $form
 
   $max_uses = &$form['commerce_discount_fields']['commerce_discount_max_uses'];
   $uses = &$form['commerce_discount_fields']['commerce_discount_uses'];
+  $limit_uses = &$form['commerce_discount_fields']['commerce_discount_usage']['limit_uses'];
+
   // Move the two fields into the correct container, and remove their
   // box styling.
   $max_uses['#weight'] = -9;
@@ -92,6 +94,9 @@ function commerce_discount_usage_form_commerce_discount_form_alter(&$form, $form
 
   // Remove the title from max uses.
   $max_uses[LANGUAGE_NONE][0]['value']['#title'] = NULL;
+  // Add a element validation to set the value to 0 if unlimited has been
+  // selected.
+  $max_uses[LANGUAGE_NONE][0]['value']['#element_validate'] = array('_commerce_discount_usage_max_uses_validate');
   // Show the two fields only when "Limited" is selected.
   $max_uses[LANGUAGE_NONE][0]['value'] += array(
     '#states' => array(
@@ -109,11 +114,30 @@ function commerce_discount_usage_form_commerce_discount_form_alter(&$form, $form
   );
 
   // Show uses as readonly on edit, hide completely on add.
-  $uses[LANGUAGE_NONE][0]['value']['#disabled'] = true;
+  $uses[LANGUAGE_NONE][0]['value']['#disabled'] = TRUE;
   if ($form_state['op'] == 'add') {
     $uses['#access'] = FALSE;
   }
+  // Display limit_uses field if needed.
+  elseif (in_array($form_state['op'], array('edit', 'clone'))) {
+    $limit_uses['#default_value'] = ($max_uses[LANGUAGE_NONE][0]['value']['#default_value'] == 0) ? 'unlimited' : 'limited';
+  }
   $uses[LANGUAGE_NONE][0]['value']['#title'] = t('Times used:');
+}
+
+/**
+ * Form element validation callback.
+ *
+ * @param array $element
+ *   The form element array.
+ * @param array $form_state
+ *   The form state array.
+ */
+function _commerce_discount_usage_max_uses_validate($element, &$form_state) {
+  // Set the max uses value to 0 if the usage is unlimited.
+  if ($form_state['values']['commerce_discount_fields']['commerce_discount_usage']['limit_uses'] == 'unlimited') {
+    form_set_value($element, 0, $form_state);
+  }
 }
 
 /**

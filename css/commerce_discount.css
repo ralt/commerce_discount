@@ -238,6 +238,9 @@
 /**
  * Usage block.
  */
+.commerce-discount-usage {
+    clear: both;
+}
 .commerce-discount-usage .form-item.form-type-select {
   margin: 0;
 }
