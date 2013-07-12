@@ -378,3 +378,10 @@ function commerce_discount_update_7101(){
 function commerce_discount_update_7102() {
   db_add_field('commerce_discount', 'component_title', array('description' => 'The component price title', 'type' => 'varchar', 'length' => 255, 'not null' => FALSE));
 }
+
+/**
+ * Update properties of product_discount bundle.
+ */
+function commerce_discount_update_7103() {
+  commerce_line_item_configure_line_item_type('product_discount');
+}

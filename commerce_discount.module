@@ -26,7 +26,7 @@ function commerce_discount_commerce_cart_order_refresh($wrapper) {
       $line_items_to_delete[] = $wrapper_line_item->line_item_id->value();
       $wrapper->commerce_line_items->offsetUnset($delta);
     }
-    elseif ($wrapper_line_item->getBundle() == 'product') {
+    elseif ($wrapper_line_item->getBundle() == 'product_discount') {
       $line_item = $wrapper_line_item->value();
       if (!isset($line_item->data['context']['discount_name'])) {
         continue;
@@ -594,6 +594,14 @@ function commerce_discount_commerce_line_item_type_info() {
       'description' => t('Line item for fixed amounts.'),
       'add_form_submit_value' => t('Add discount'),
       'base' => 'commerce_discount_line_item',
+    ),
+    'product_discount' => array(
+      'type' => 'product_discount',
+      'name' => t('Product discounted'),
+      'description' => t('References a discounted product.'),
+      'product' => TRUE,
+      'add_form_submit_value' => t('Add product'),
+      'base' => 'commerce_product_line_item',
     ),
   );
 }

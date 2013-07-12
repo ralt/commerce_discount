@@ -256,7 +256,7 @@ function commerce_discount_free_products(EntityDrupalWrapper $wrapper, $discount
   foreach ($products as $product) {
     //TODO: Add display_path property to line item data context in order to expose product link in shopping cart.
     $data = array('context' => array('commerce_discount_offer' => 'free_products', 'discount_name' => $discount_name));
-    $line_item = commerce_product_line_item_new($product, 1, $order->order_id, $data);
+    $line_item = commerce_product_line_item_new($product, 1, $order->order_id, $data, 'product_discount');
 
     $wrapper_line_item = entity_metadata_wrapper('commerce_line_item', $line_item);
 
