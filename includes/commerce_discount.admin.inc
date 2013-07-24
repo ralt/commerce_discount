@@ -59,6 +59,10 @@ class CommerceDiscountUIController extends EntityDefaultUIController {
       'file' => 'includes/commerce_discount.admin.inc',
       'file path' => drupal_get_path('module', 'commerce_discount'),
     );
+    $items[$this->path . '/list'] = array(
+      'title' => 'Discounts',
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+    );
     $items[$this->path . '/add']['title callback'] = 'commerce_discount_get_action_title';
     $items[$this->path . '/import']['title callback'] = 'commerce_discount_get_action_title';
 
