@@ -1,7 +1,7 @@
 name = Commerce Discount
 description = Provides common functionality and a UI for managing discounts.
 core = 7.x
-package = Commerce
+package = Commerce (contrib)
 
 dependencies[] = number
 dependencies[] = commerce_price

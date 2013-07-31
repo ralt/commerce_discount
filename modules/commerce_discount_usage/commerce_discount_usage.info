@@ -1,7 +1,7 @@
 name = Commerce Discount Usage
 description = Provides fields for tracking the discount usage.
 core = 7.x
-package = Commerce
+package = Commerce (contrib)
 
 dependencies[] = commerce_discount
 

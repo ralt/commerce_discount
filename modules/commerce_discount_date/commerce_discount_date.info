@@ -1,7 +1,7 @@
 name = Commerce Discount Date
 description = Provides date fields for the Commerce discount entity.
 core = 7.x
-package = Commerce
+package = Commerce (contrib)
 
 dependencies[] = commerce_discount
 dependencies[] = date
