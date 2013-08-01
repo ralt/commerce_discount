@@ -108,8 +108,8 @@ function commerce_discount_requirements($phase) {
   if ($phase == 'runtime') {
     if (!module_exists('inline_conditions')) {
       $requirements['inline_conditions'] = array(
-        'title' => $t('Inline conditions'),
-        'value' => $t('Inline conditions has to be installed.'),
+        'title' => $t('Inline Conditions'),
+        'value' => $t('Inline Conditions has to be installed.'),
         'severity' => REQUIREMENT_WARNING,
       );
     }

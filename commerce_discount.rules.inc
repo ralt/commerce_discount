@@ -22,7 +22,7 @@ function commerce_discount_rules_action_info() {
           'wrapped' => TRUE,
         ),
         'commerce_discount' => array(
-          'label' => t('Commerce discount'),
+          'label' => t('Commerce Discount'),
           'type' => 'token',
           'options list' => 'commerce_discount_entity_list',
         ),
@@ -42,7 +42,7 @@ function commerce_discount_rules_action_info() {
         'wrapped' => FALSE,
       ),
       'commerce_discount' => array(
-        'label' => t('Commerce discount'),
+        'label' => t('Commerce Discount'),
         'type' => 'token',
         'options list' => 'commerce_discount_entity_list',
       ),
