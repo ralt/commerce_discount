@@ -208,7 +208,7 @@ function commerce_discount_features_pipe_commerce_discount_alter(&$pipe, $data, 
 
   foreach ($data as $name) {
     $wrapper = entity_metadata_wrapper('commerce_discount', $name);
-    $pipe['commerce_discount_offer'][] = $wrapper->commerce_discount_offer->name->value();
+    $pipe['commerce_discount_offer'][] = $wrapper->commerce_discount_offer->type->value();
   }
 }
 
