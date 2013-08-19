@@ -360,7 +360,7 @@ function commerce_discount_add_price_component(EntityDrupalWrapper $line_item_wr
 
   $line_item_wrapper->commerce_unit_price->data = commerce_price_component_add(
     $line_item_wrapper->commerce_unit_price->value(),
-    empty($component_title) ? 'discount' : $component_title,
+    empty($component_title) ? 'discount' : check_plain('discount-' . $component_title),
     $difference,
     TRUE
   );
