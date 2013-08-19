@@ -159,15 +159,15 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
     '#field_suffix' => '</span>&lrm;',
   );
 
-  $form['enabled'] = array(
+  $form['status'] = array(
     '#title' => t('Discount status'),
     '#type' => 'select',
     '#options' => array(
-      TRUE => t('Enabled'),
+      TRUE => t('Active'),
       FALSE => t('Disabled'),
     ),
     '#required' => FALSE,
-    '#default_value' => $commerce_discount->enabled,
+    '#default_value' => $commerce_discount->status,
   );
 
   // Show a list of commerce discounts.

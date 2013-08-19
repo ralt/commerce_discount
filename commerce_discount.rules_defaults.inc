@@ -23,7 +23,7 @@ function commerce_discount_default_rules_configuration() {
       $rule = rules_reaction_rule();
 
       $rule->label = $discount->label;
-      $rule->active = $discount->enabled;
+      $rule->active = $discount->status;
 
       $type = $types[$discount->type];
       $wrapper = entity_metadata_wrapper('commerce_discount', $discount->name);

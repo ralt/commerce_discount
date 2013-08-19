@@ -21,7 +21,7 @@ function commerce_discount_usage_views_default_views_alter(&$views) {
   }
   foreach ($handler->display->display_options['fields'] as $field_id => $field) {
     // Add the usage column after the status column.
-    if ($field_id == 'enabled') {
+    if ($field_id == 'status') {
       $fields += $usage_field;
     }
     $fields[$field_id] = $field;
