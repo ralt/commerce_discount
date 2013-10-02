@@ -95,6 +95,14 @@ function commerce_discount_fixed_amount(EntityDrupalWrapper $wrapper, $discount_
       // Set reference to the discount.
       // @todo: It doesn't work with the wrapper.
       $order = $wrapper->value();
+
+      // If the discount will bring the order to less than zero, set the discount
+      // amount so that it stops at zero.
+      $order_amount = $wrapper->commerce_order_total->amount->value();
+      if (-$discount_price['amount'] > $order_amount) {
+        $discount_price['amount'] = -$order_amount;
+      }
+
       $delta = $wrapper->commerce_discounts->count();
       $order->commerce_discounts[LANGUAGE_NONE][$delta]['target_id'] = $discount_wrapper->discount_id->value();
 
@@ -115,6 +123,12 @@ function commerce_discount_fixed_amount(EntityDrupalWrapper $wrapper, $discount_
         if (!empty($component['price']['data']['discount_name']) && $component['price']['data']['discount_name'] == $discount_wrapper->getIdentifier()) {
           return;
         }
+      }
+
+      // Do not allow negative line item totals.
+      $line_item_amount = $wrapper->commerce_unit_price->amount->value();
+      if (-$discount_price['amount'] > $line_item_amount) {
+        $discount_price['amount'] = -$line_item_amount;
       }
 
       commerce_discount_add_price_component($wrapper, $discount_name, $discount_price);
