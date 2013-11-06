@@ -211,7 +211,9 @@ function commerce_discount_install_helper() {
       'entity_type' => 'commerce_discount_offer',
       'bundle' => 'percentage',
       'label' => t('Percentage'),
-      'description' => t('The percentage used to calculate this tax expressed as a decimal, e.g. .06 for a rate of 6%.'),
+      'settings' => array(
+        'suffix' => '%',
+      ),
       'required' => TRUE,
     );
     field_create_instance($instance);
