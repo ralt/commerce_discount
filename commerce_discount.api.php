@@ -79,3 +79,18 @@ function hook_commerce_discount_rule_build($rule, $commerce_discount) {
     $rule->action('drupal_message', array('message' => 'Discount FOO was applied.'));
   }
 }
+
+/**
+ * Alter the context that is going to be passed into a free product line item.
+ * Use this to modify the display path.
+ *
+ * @param $context
+ *  The context that is about to be passed into a new free product line item.
+ * @param $product
+ *  The product that is being offered as free.
+ * @param $discount
+ *  The discount containing this offer.
+ */
+function hook_commerce_discount_free_product_context_alter(&$context, $product, $discount) {
+  $context['display_path'] = 'any/page';
+}

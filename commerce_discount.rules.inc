@@ -268,8 +268,48 @@ function commerce_discount_free_products(EntityDrupalWrapper $wrapper, $discount
 
   // Loop on products and add each product to order line items.
   foreach ($products as $product) {
-    //TODO: Add display_path property to line item data context in order to expose product link in shopping cart.
-    $data = array('context' => array('commerce_discount_offer' => 'free_products', 'discount_name' => $discount_name));
+    $context = array(
+      'commerce_discount_offer' => 'free_products',
+      'discount_name' => $discount_name
+    );
+
+    // Look for a product display that references this project. This is
+    // imprecise but covers the vastly most common use case.
+    $node_instances = field_info_instances('node');
+
+    foreach ($node_instances as $bundle => $instances) {
+      foreach ($instances as $instance) {
+        $field = field_info_field($instance['field_name']);
+
+        if ($field['type'] == 'commerce_product_reference') {
+          $query = new EntityFieldQuery;
+          $results = $query
+            ->entityCondition('entity_type', 'node')
+            ->fieldCondition($instance['field_name'], 'product_id', $product->product_id)
+            ->propertyCondition('status', 1)
+            ->execute();
+
+          if (!empty($results['node'])) {
+            $nid = reset(array_keys($results['node']));
+            $node = node_load($nid);
+
+            // Just take the first one.
+            $context['entity_id'] = reset(array_keys($results['node']));
+            $context['entity_type'] = 'node';
+            $uri = entity_uri('node', $node);
+            $context['display_path'] = $uri['path'];
+
+            // If we have found something, no need to continue.
+            break;
+          }
+        }
+      }
+    }
+
+    // This covers use cases where the above logic is insufficient.
+    drupal_alter('commerce_discount_free_product_context', $context, $product, $discount_wrapper->value());
+
+    $data = array('context' => $context);
     $line_item = commerce_product_line_item_new($product, 1, $order->order_id, $data, 'product_discount');
 
     $wrapper_line_item = entity_metadata_wrapper('commerce_line_item', $line_item);
