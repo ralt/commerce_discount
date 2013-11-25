@@ -94,7 +94,7 @@ function commerce_discount_remove_discount_components($price_wrapper) {
     }
     $discount_name = $component['price']['data']['discount_name'];
     $wrapper = entity_metadata_wrapper('commerce_discount', $discount_name);
-    if (!$wrapper->raw() || $wrapper->type->value() == 'order_discount') {
+    if (!$wrapper->value() || $wrapper->type->value() == 'order_discount') {
       unset($data['components'][$key]);
       $component_removed = TRUE;
     }
