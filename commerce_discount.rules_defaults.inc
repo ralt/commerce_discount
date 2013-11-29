@@ -29,7 +29,7 @@ function commerce_discount_default_rules_configuration() {
       $wrapper = entity_metadata_wrapper('commerce_discount', $discount->name);
       $offer_type = $offer_types[$wrapper->commerce_discount_offer->getBundle()];
       $rule
-        ->event($type['event'])
+        ->event(!empty($offer_type['event']) ? $offer_type['event'] : $type['event'])
         ->action(
           $offer_type['action'], array(
             'entity:select' => $type['entity type'],
@@ -37,9 +37,9 @@ function commerce_discount_default_rules_configuration() {
           )
         );
 
-      // Let other modules alter the rule object, with configuration specifc
+      // Let other modules alter the rule object, with configuration specific
       // to commerce discount. We don't invoke an alter function, as it can
-      // be already acheived by implementing
+      // be already achieved by implementing
       // hook_default_rules_configuration_alter().
       module_invoke_all('commerce_discount_rule_build', $rule, $discount);
 

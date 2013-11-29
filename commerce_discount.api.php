@@ -17,7 +17,7 @@
  *   the defined type.
  * - entity type: The type of entity to which the discount will be applied.
  *
- * @return
+ * @return array
  *   An array of discount type arrays keyed by the machine name of the type.
  */
 function hook_commerce_discount_type_info() {
@@ -46,11 +46,15 @@ function hook_commerce_discount_type_info() {
  * - label: a translatable, human-readable discount offer type label.
  * - action: the Rules function callback used to apply a discount offer
  *   of the defined type to an entity.
+ * - event (optional): the machine name of the rules event used to apply a
+ *   discount of the defined type. This one will override the default discount
+ *   type event. If you need to alter event parameters, you have to implement
+ *   the hook_commerce_discount_rule_build() in your module.
  * - entity types: The entity types that this offer handles. Only offers
  *   that support the "entity type" of the selected discount type are shown in
  *   the UI.
  *
- * @return
+ * @return array
  *   An array of discount offer type arrays keyed by the machine name of the
  *   type.
  */
@@ -59,6 +63,7 @@ function hook_commerce_discount_offer_type_info() {
   $types['random_amount'] = array(
     'label' => t('Random $ off'),
     'action' => 'foo_random_amount',
+    'event' => 'foo_random_rules_event',
     'entity types' => array('commerce_order', 'commerce_line_item'),
   );
 
