@@ -131,9 +131,15 @@ function commerce_discount_install_helper() {
   $instances = field_info_instances();
   $field_types = field_info_field_types();
 
-  if (!isset($field_types['entityreference']) || !isset($field_types['inline_conditions'])) {
-    // Clear field info cache, so entity reference & inline_conditions field can
-    // be used.
+  // Clear field info cache, so entity reference, inline_conditions and
+  // commerce_product_reference field types can be used.
+  if (
+    !isset($field_types['entityreference'])
+    ||
+    !isset($field_types['inline_conditions'])
+    ||
+    !isset($field_types['commerce_product_reference'])
+  ) {
     field_info_cache_clear();
   }
 
@@ -301,7 +307,7 @@ function commerce_discount_install_helper() {
   }
 
   // Creating field and its instance for free products offer type.
-  if (empty($fields['commerce_free_products'])) {
+  if (empty($fields['commerce_free_products']) && isset($field_types['commerce_product_reference'])) {
     $field = array(
       'entity_types' => array('commerce_discount_offer'),
       'field_name' => 'commerce_free_products',
@@ -310,7 +316,7 @@ function commerce_discount_install_helper() {
       'cardinality' => FIELD_CARDINALITY_UNLIMITED,
     );
     field_create_field($field);
-}
+  }
   if (empty($instances['commerce_discount_offer']['free_products']['commerce_free_products'])) {
     $instance = array(
       'field_name' => 'commerce_free_products',
