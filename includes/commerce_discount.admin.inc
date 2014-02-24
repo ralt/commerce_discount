@@ -216,6 +216,7 @@ function commerce_discount_form($form, &$form_state, CommerceDiscount $commerce_
     '#value' => t('Save discount'),
     '#weight' => 40,
     '#ief_submit_all' => TRUE,
+    '#submit' => array(),
   );
 
   if (!$commerce_discount->hasStatus(ENTITY_IN_CODE) && $op != 'add') {
