@@ -26,7 +26,6 @@ function commerce_discount_default_rules_configuration() {
       $rule->active = $discount->status;
 
       $type = $types[$discount->type];
-      $wrapper = entity_metadata_wrapper('commerce_discount', $discount->name);
       $offer_type = $offer_types[$wrapper->commerce_discount_offer->getBundle()];
       $rule
         ->event(!empty($offer_type['event']) ? $offer_type['event'] : $type['event'])
