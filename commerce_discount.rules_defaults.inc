@@ -20,13 +20,15 @@ function commerce_discount_default_rules_configuration() {
     $wrapper_properties = $wrapper->getPropertyInfo();
     // Only for Commerce Discount wrappers with Commerce Discount Offer defined.
     if (in_array('commerce_discount_offer', array_keys($wrapper_properties))) {
+      $type = $types[$discount->type];
+      $offer_type = $offer_types[$wrapper->commerce_discount_offer->getBundle()];
+
       $rule = rules_reaction_rule();
 
       $rule->label = $discount->label;
       $rule->active = $discount->status;
+      $rule->tags = array('Commerce Discount', check_plain($type['label']));
 
-      $type = $types[$discount->type];
-      $offer_type = $offer_types[$wrapper->commerce_discount_offer->getBundle()];
       $rule
         ->event(!empty($offer_type['event']) ? $offer_type['event'] : $type['event'])
         ->action(
