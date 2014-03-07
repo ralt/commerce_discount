@@ -414,7 +414,7 @@ function commerce_discount_add_price_component(EntityDrupalWrapper $line_item_wr
   $line_item_wrapper->commerce_unit_price->amount = $updated_amount;
   // Add the discount amount as a price component.
   $price = $line_item_wrapper->commerce_unit_price->value();
-  $type = empty($component_title) ? 'discount' : check_plain('discount-' . $component_title);
+  $type = empty($component_title) ? 'discount' : check_plain('discount|' . $component_title);
   $line_item_wrapper->commerce_unit_price->data = commerce_price_component_add($price, $type, $difference, TRUE, TRUE);
 
   // Update commerce_total so that the order total can be refreshed without
