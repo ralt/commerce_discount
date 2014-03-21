@@ -10,7 +10,7 @@ dependencies[] = commerce_line_item
 dependencies[] = commerce_product_reference
 dependencies[] = entity
 dependencies[] = entityreference
-dependencies[] = inline_entity_form
+dependencies[] = inline_entity_form (>=1.5)
 dependencies[] = views
 dependencies[] = inline_conditions
 
