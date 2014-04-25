@@ -291,14 +291,18 @@ function commerce_discount_free_products(EntityDrupalWrapper $wrapper, $discount
             ->execute();
 
           if (!empty($results['node'])) {
-            $nid = reset(array_keys($results['node']));
-            $node = node_load($nid);
+            $nids = array_keys($results['node']);
 
             // Just take the first one.
-            $context['entity_id'] = reset(array_keys($results['node']));
-            $context['entity_type'] = 'node';
-            $uri = entity_uri('node', $node);
-            $context['display_path'] = $uri['path'];
+            $node = node_load(reset($nids));
+
+            // Build the context array in order to attach the display path on
+            // product level.
+            $context = array(
+              'entity_id' => $node->nid,
+              'entity_type' => 'node',
+              'display_path' => entity_uri('node', $node)['path']
+            );
 
             // If we have found something, no need to continue.
             break;
@@ -308,7 +312,8 @@ function commerce_discount_free_products(EntityDrupalWrapper $wrapper, $discount
     }
 
     // This covers use cases where the above logic is insufficient.
-    drupal_alter('commerce_discount_free_product_context', $context, $product, $discount_wrapper->value());
+    $discount = $discount_wrapper->value();
+    drupal_alter('commerce_discount_free_product_context', $context, $product, $discount);
 
     $data = array('context' => $context);
     $line_item = commerce_product_line_item_new($product, 1, $order->order_id, $data, 'product_discount');
@@ -450,11 +455,11 @@ function commerce_discount_add_price_component(EntityDrupalWrapper $line_item_wr
  *   The wrapped order entity.
  * @param string $discount_name
  *   The name of the discount being applied.
- * @param array $discount_amount
+ * @param array $discount_price
  *   The discount amount price array (amount, currency_code).
  *
- * @return
- *   TRUE if an existing line item was successfuly modified, FALSE otherwise.
+ * @return bool
+ *   TRUE if an existing line item was successfully modified, FALSE otherwise.
  */
 function commerce_discount_set_existing_line_item_price(EntityDrupalWrapper $order_wrapper, $discount_name, $discount_price) {
   $modified_existing = FALSE;
