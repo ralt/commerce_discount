@@ -40,9 +40,6 @@ function commerce_discount_commerce_cart_order_refresh($wrapper) {
     }
   }
 
-  // Re-add all applicable discount price components and/or line items.
-  rules_invoke_event('commerce_discount_order', $wrapper->value());
-
   // Save the line items which have changes after removing/re-adding discounts;
   // except if one of our discount type line items still has price 0, delete it.
   foreach ($wrapper->commerce_line_items as $delta => $wrapper_line_item) {
@@ -76,6 +73,9 @@ function commerce_discount_commerce_cart_order_refresh($wrapper) {
 
   // Delete line items.
   commerce_line_item_delete_multiple($line_items_to_delete);
+
+  // Re-add all applicable discount price components and/or line items.
+  rules_invoke_event('commerce_discount_order', $wrapper->value());
 }
 
 /**
