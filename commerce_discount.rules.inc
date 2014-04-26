@@ -295,13 +295,14 @@ function commerce_discount_free_products(EntityDrupalWrapper $wrapper, $discount
 
             // Just take the first one.
             $node = node_load(reset($nids));
+            $uri = entity_uri('node', $node);
 
             // Build the context array in order to attach the display path on
             // product level.
             $context = array(
               'entity_id' => $node->nid,
               'entity_type' => 'node',
-              'display_path' => entity_uri('node', $node)['path']
+              'display_path' => $uri['path'],
             );
 
             // If we have found something, no need to continue.
@@ -364,7 +365,7 @@ function commerce_discount_add_line_item(EntityDrupalWrapper $order_wrapper, $di
   // Initialize the line item unit price.
   $discount_line_item_wrapper->commerce_unit_price->amount = 0;
   $discount_line_item_wrapper->commerce_unit_price->currency_code = $discount_amount['currency_code'];
-  
+
   // Reset the data array of the line item total field to only include a
   // base price component, set the currency code from the order.
   $base_price = array(
@@ -372,7 +373,7 @@ function commerce_discount_add_line_item(EntityDrupalWrapper $order_wrapper, $di
     'currency_code' => $discount_amount['currency_code'],
     'data' => array(),
   );
-  $discount_line_item_wrapper->commerce_unit_price->data = commerce_price_component_add($base_price, 'base_price', $base_price, TRUE); 
+  $discount_line_item_wrapper->commerce_unit_price->data = commerce_price_component_add($base_price, 'base_price', $base_price, TRUE);
 
   // Add the discount price component.
   commerce_discount_add_price_component($discount_line_item_wrapper, $discount_name, $discount_amount);
