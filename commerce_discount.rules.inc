@@ -92,6 +92,12 @@ function commerce_discount_fixed_amount(EntityDrupalWrapper $wrapper, $discount_
 
   switch ($wrapper->type()) {
     case 'commerce_order':
+
+      // Exit if the wrapper doesn't have a commerce_discounts property.
+      if (!$wrapper->__isset('commerce_discounts')) {
+        return;
+      }
+
       // Set reference to the discount.
       // @todo: It doesn't work with the wrapper.
       $order = $wrapper->value();
@@ -151,7 +157,10 @@ function commerce_discount_percentage(EntityDrupalWrapper $wrapper, $discount_na
 
   switch ($wrapper->type()) {
     case 'commerce_order':
-      if (!$wrapper->commerce_line_items->value()) {
+
+      // Exit if there are no line items or the wrapper doesn't contain
+      // the commerce_discounts property.
+      if (!$wrapper->commerce_line_items->value() || !$wrapper->__isset('commerce_discounts')) {
         return;
       }
 
@@ -259,6 +268,11 @@ function commerce_discount_free_shipping_service($order, $discount_name, $servic
 function commerce_discount_free_products(EntityDrupalWrapper $wrapper, $discount_name) {
   $discount_wrapper = entity_metadata_wrapper('commerce_discount', $discount_name);
   if (!$products = $discount_wrapper->commerce_discount_offer->commerce_free_products->value()) {
+    return;
+  }
+
+  // Exit if the wrapper doesn't have a commerce_discounts property.
+  if (!$wrapper->__isset('commerce_discounts')) {
     return;
   }
 
