@@ -408,7 +408,7 @@ function commerce_discount_add_price_component(EntityDrupalWrapper $line_item_wr
   $updated_amount = commerce_round(COMMERCE_ROUND_HALF_UP, $current_amount + $discount_amount['amount']);
 
   $difference = array(
-    'amount' => $discount_amount['amount'],
+    'amount' => commerce_round(COMMERCE_ROUND_HALF_UP, $discount_amount['amount']),
     'currency_code' => $discount_amount['currency_code'],
     'data' => array(
       'discount_name' => $discount_name,
