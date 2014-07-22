@@ -141,6 +141,7 @@ function commerce_discount_entity_info() {
       'name' => 'name',
       'label' => 'label',
       'bundle' => 'type',
+      'status' => 'export_status',
     ),
     'bundles' => array(),
     'module' => 'commerce_discount',
