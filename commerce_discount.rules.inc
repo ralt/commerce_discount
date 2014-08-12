@@ -49,10 +49,34 @@ function commerce_discount_rules_action_info() {
       'shipping_service' => array(
         'label' => t('Shipping service'),
         'type' => 'token',
-        'options list' => 'commerce_shipping_service_options_list'
-      )
+        'options list' => 'commerce_shipping_service_options_list',
+      ),
     ),
     'base' => 'commerce_discount_free_shipping_service',
+  );
+
+  $items['commerce_discount_percent_off_shipping_service'] = array(
+    'label' => t('% off of shipping'),
+    'group' => t('Commerce Discount'),
+    'parameter' => array(
+      'entity' => array(
+        'label' => t('Entity'),
+        'type' => 'entity',
+        'wrapped' => FALSE,
+      ),
+      'commerce_discount' => array(
+        'label' => t('Commerce Discount'),
+        'type' => 'token',
+        'options list' => 'commerce_discount_entity_list',
+      ),
+      'shipping_service' => array(
+        'label' => t('Shipping service'),
+        'type' => 'token',
+        'optional' => TRUE,
+        'options list' => 'commerce_shipping_service_options_list',
+      ),
+    ),
+    'base' => 'commerce_discount_percent_off_shipping_service',
   );
 
   return $items;
@@ -73,6 +97,13 @@ function commerce_discount_rules_event_info() {
 
   $items['commerce_discount_free_shipping'] = array(
     'label' => t('Makes a shipping service free'),
+    'group' => t('Commerce - discount'),
+    'variables' => entity_rules_events_variables('commerce_order', t('Order', array(), array('context' => 'a drupal commerce order'))),
+    'access callback' => 'commerce_order_rules_access',
+  );
+
+  $items['commerce_discount_percent_off_shipping'] = array(
+    'label' => t('% off of a shipping service'),
     'group' => t('Commerce - discount'),
     'variables' => entity_rules_events_variables('commerce_order', t('Order', array(), array('context' => 'a drupal commerce order'))),
     'access callback' => 'commerce_order_rules_access',
@@ -258,6 +289,90 @@ function commerce_discount_free_shipping_service($order, $discount_name, $servic
 }
 
 /**
+ * Rules action: Apply percent off of shipping discount.
+ *
+ * @param object $order
+ *   Wrapped commerce_order entity type.
+ * @param string $discount_name
+ *   The name of the discount.
+ */
+function commerce_discount_percent_off_shipping_service($order, $discount_name) {
+
+
+  // Load the discount wrapper, which has all the discount information in it.
+  $discount_wrapper = entity_metadata_wrapper('commerce_discount', $discount_name);
+
+  // Load the shipping service, if one was selected.
+  $shipping_service_to_discount = $discount_wrapper->commerce_discount_offer->commerce_percent_off_ship_serv->value();
+
+  // Get the discount label for later usage.
+  $discount_label = $discount_wrapper->value()->label;
+
+  // Determine the discount multiplifer based on submitted value.
+  $discount_value = $discount_wrapper->commerce_discount_offer->commerce_percent_off_shipping->value();
+  if ($discount_value > 1 && $discount_value <= 100) {
+    $discount_multiplier = (100 - $discount_value) / 100;
+  }
+
+  // Bring in the $conf global for stashing what shipping services were altered.
+  $conf['discounted_shipping_services'] = array();
+
+  // Determine whether to affect a singular service, or all services.
+  if (isset($shipping_service_to_discount)) {
+    // Add singular shipping service to $conf global array.
+    $order->shipping_rates[$shipping_service_to_discount]->data['shipping_service']['description'] .= ' <span class="shipping-discount-text">' . $discount_label . '</span>';
+
+    // Instantiate the line item wrapper.
+    $shipping_line_item_wrapper = entity_metadata_wrapper('commerce_line_item', $order->shipping_rates[$shipping_service_to_discount]);
+
+    // Calculate the correct value to discount the line item.
+    $discounted_shipping_value = $shipping_line_item_wrapper->commerce_unit_price->amount->value() * $discount_multiplier;
+
+    // The following applies the shipping discount to the line item.
+    $shipping_line_item_wrapper->commerce_unit_price->amount = $discounted_shipping_value;
+    $shipping_service = commerce_shipping_service_load($discount_name);
+
+    // Updating the data component. Effectively updates line item price!
+    $shipping_line_item_wrapper->commerce_unit_price->data = array();
+    $shipping_line_item_wrapper->commerce_unit_price->data = commerce_price_component_add(
+      $shipping_line_item_wrapper->commerce_unit_price->value(),
+      $shipping_service['price_component'],
+      $shipping_line_item_wrapper->commerce_unit_price->value(),
+      TRUE,
+      FALSE
+    );
+  }
+  else{
+    foreach ($order->shipping_rates as $shipping_service => $shipping_object) {
+      // Add singular shipping service to $conf global array.
+      $order->shipping_rates[$shipping_service]->data['shipping_service']['description'] .= ' <span class="shipping-discount-text">' . $discount_label . '</span>';
+
+      // Instantiate the line item wrapper.
+      $shipping_line_item_wrapper = entity_metadata_wrapper('commerce_line_item', $order->shipping_rates[$shipping_service]);
+
+      // Calculate the correct value to discount the line item.
+      $discounted_shipping_value = $shipping_line_item_wrapper->commerce_unit_price->amount->value() * $discount_multiplier;
+
+      // The following applies the shipping discount to the line item.
+      $shipping_line_item_wrapper->commerce_unit_price->amount = $discounted_shipping_value;
+
+      $shipping_service = commerce_shipping_service_load($discount_name);
+
+      // Updating the data component. Effectively updates line item price!
+      $shipping_line_item_wrapper->commerce_unit_price->data = array();
+      $shipping_line_item_wrapper->commerce_unit_price->data = commerce_price_component_add(
+        $shipping_line_item_wrapper->commerce_unit_price->value(),
+        $shipping_service['price_component'],
+        $shipping_line_item_wrapper->commerce_unit_price->value(),
+        TRUE,
+        FALSE
+      );
+    }
+  }
+
+}
+
+/**
  * Rules action: Apply free products discount.
  *
  * @param EntityDrupalWrapper $wrapper
@@ -285,7 +400,7 @@ function commerce_discount_free_products(EntityDrupalWrapper $wrapper, $discount
   foreach ($products as $product) {
     $context = array(
       'commerce_discount_offer' => 'free_products',
-      'discount_name' => $discount_name
+      'discount_name' => $discount_name,
     );
 
     // Look for a product display that references this project. This is
@@ -297,7 +412,7 @@ function commerce_discount_free_products(EntityDrupalWrapper $wrapper, $discount
         $field = field_info_field($instance['field_name']);
 
         if ($field['type'] == 'commerce_product_reference') {
-          $query = new EntityFieldQuery;
+          $query = new EntityFieldQuery();
           $results = $query
             ->entityCondition('entity_type', 'node')
             ->fieldCondition($instance['field_name'], 'product_id', $product->product_id)
