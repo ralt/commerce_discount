@@ -295,8 +295,8 @@ function commerce_discount_form_commerce_discount_form_alter(&$form, $form_state
  * Implements hook_field_widget_form_alter().
  */
 function commerce_discount_field_widget_form_alter(&$element, &$form_state, $context) {
-  if (isset($element['#field_name']) && ($element['#field_name'] == 'commerce_free_shipping')
-    || $element['#field_name'] == 'commerce_percent_off_ship_serv') {
+  if (isset($element['#field_name']) && ($element['#field_name'] == 'commerce_free_shipping'
+    || $element['#field_name'] == 'commerce_percent_off_ship_serv')) {
     $element['#options'] += commerce_shipping_service_options_list();
     if ($form_state['op'] == 'edit') {
       $wrapper_offer = entity_metadata_wrapper('commerce_discount_offer', $element['#entity']);
