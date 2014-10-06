@@ -89,12 +89,23 @@ function commerce_discount_remove_discount_components($price_wrapper) {
   $component_removed = FALSE;
   // Remove price components belonging to order discounts.
   foreach ($data['components'] as $key => $component) {
-    if (empty($component['price']['data']['discount_name'])) {
-      continue;
+    $remove = FALSE;
+
+    // Remove all discount components.
+    if (!empty($component['price']['data']['discount_name'])) {
+      $discount_name = $component['price']['data']['discount_name'];
+      $wrapper = entity_metadata_wrapper('commerce_discount', $discount_name);
+      if (!$wrapper->value() || $wrapper->getBundle() == 'order_discount') {
+        $remove = TRUE;
+      }
+    } else if ($component['name'] != 'base_price') {
+      // As long as the component is neither base price nor discount, allow other modules to say whether it gets reset.
+      // This is so that discounts can apply against a price that has been stripped of components from modules that
+      // need to apply against a post-discount price.
+      drupal_alter('commerce_discount_remove_price_component', $component, $remove);
     }
-    $discount_name = $component['price']['data']['discount_name'];
-    $wrapper = entity_metadata_wrapper('commerce_discount', $discount_name);
-    if (!$wrapper->value() || $wrapper->getBundle() == 'order_discount') {
+
+    if ($remove) {
       unset($data['components'][$key]);
       $component_removed = TRUE;
     }
