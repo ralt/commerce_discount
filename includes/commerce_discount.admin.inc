@@ -86,10 +86,9 @@ class CommerceDiscountUIController extends EntityDefaultUIController {
         array(
           'query' => array(
             'event' => 0,
-            'tag' => 'Commerce+Discount'
+            'tag' => 'Commerce+Discount',
           ),
-        ),
-        301
+        )
       ),
       'access arguments' => array('administer commerce discounts'),
       'type' => MENU_LOCAL_TASK,
